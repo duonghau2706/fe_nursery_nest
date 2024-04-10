@@ -1,3 +1,5 @@
 import userApi from './user'
 import loginApi from './login'
-export { userApi, loginApi }
+import productApi from './product'
+
+export { userApi, loginApi, productApi }

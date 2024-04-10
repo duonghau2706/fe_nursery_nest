@@ -5,18 +5,18 @@ interface ITokenDecode {
   name: string
   email: string
   password: string
-  gender: number
+  // gender: number
   born: string
   phone: string
   address: string
-  money: number
-  list_movie_id: string
-  service: number
-  renewal_date: string
-  bank_name: string
-  bank_account: string
+  // money: number
+  // list_movie_id: string
+  // service: number
+  // renewal_date: string
+  // bank_name: string
+  // bank_account: string
   role: number
-  is_member: boolean
+  // is_member: boolean
 }
 
 const verifyToken = () => {

@@ -1,12 +1,22 @@
 const URL = {
+  CART: '/cart',
+  BLOG: '/blog',
+  CONTACT: '/contact',
+  ABOUT: '/about',
+  PRODUCT: '/product',
+  THANKYOU: '/thankyou',
+  CATEGORY: '/category',
+  ACCOUNT: '/account',
+
   HOME: '/home',
   LOGIN: '/login',
-  ACCOUNT: '/account',
+
   REGISTER: '/register',
   SIGNUP: '/signup',
   CHANGE_PLAN: '/change-plan',
   PLANFORM: '/signup/planform',
-  PAYMENT: '/signup/payment',
+  PAYMENT: '/payment',
+  // PAYMENT: '/signup/payment',
   CREDIT_OPTIONS: '/signup/creditoption',
   RECHARGE: '/recharge',
   SETUP_RECHARGE: '/signup/setup-recharge',
@@ -31,6 +41,11 @@ const URL = {
 }
 
 const QUERY_KEY = {
+  GET_ALL_CART: 'GET_ALL_CART',
+  GET_PRODUCT_BY_ID: 'GET_PRODUCT_BY_ID',
+  GET_COMMENT_BY_PRODUCT_ID: 'GET_COMMENT_BY_PRODUCT_ID',
+  GET_ALL_PRODUCT: 'GET_ALL_PRODUCT',
+
   LOGIN: 'login',
   INSERT_TRANSACTION_HISTORIES: 'insert_transaction_histories',
   GET_TRANSACTION_HISTORIES_USER: 'get_transaction_histories',
@@ -54,6 +69,13 @@ const QUERY_KEY = {
 }
 
 const endpoint = {
+  get_all_cart: '/api/v1/cart/get-all-cart',
+  update_cart: '/api/v1/cart/update-cart',
+  get_info_product_by_id: '/api/v1/product/get-info-by-product-id',
+  get_sorted_product_by_condition: '/api/v1/product/get-sorted-by-condition',
+  get_comment_by_product_id: '/api/v1/product/get-comment-by-id',
+  get_all_product: '/api/v1/product/get-all',
+
   login: '/api/v1/login/auth',
   update_account_user: '/api/v1/user/update-account',
   get_transaction_histories_user: '/api/v1/user/get-transaction-histories',
@@ -381,13 +403,21 @@ const MESSAGE = {
 
 const DATE_DMY = 'DD/MM/YYYY'
 
-const CATEGORY = [
-  { name: 'HANH_DONG', value: 'Hành động' },
-  { name: 'HINH_SU', value: 'Hình sự' },
-  { name: 'VIEN_TUONG', value: 'Viễn tưởng' },
-  { name: 'PHIEU_LUU', value: 'Phiêu lưu' },
-  { name: 'BI_AN', value: 'Bí ẩn' },
-  { name: 'HAI_HUOC', value: 'Hài hước' },
+// const CATEGORY = [
+//   { name: 'HANH_DONG', value: 'Hành động' },
+//   { name: 'HINH_SU', value: 'Hình sự' },
+//   { name: 'VIEN_TUONG', value: 'Viễn tưởng' },
+//   { name: 'PHIEU_LUU', value: 'Phiêu lưu' },
+//   { name: 'BI_AN', value: 'Bí ẩn' },
+//   { name: 'HAI_HUOC', value: 'Hài hước' },
+// ]
+
+const CATEGORIES = [
+  { type: 'KHAN_LAU_MAT', name: 'Khăn lau mặt', value: 0 },
+  { type: 'BONG_TAY_TRANG', name: 'Bông tẩy trang', value: 1 },
+  { type: 'KHAN_KHO_DA_NANG', name: 'Khăn khô đa năng', value: 2 },
+  { type: 'KHAN_NEN', name: 'Khăn nén', value: 3 },
+  { type: 'MAY_HUT_SUA', name: 'Máy hút sữa', value: 4 },
 ]
 
 const TYPE = [
@@ -431,7 +461,7 @@ const OPTIONS_BANKNAME = [
 export {
   OPTIONS_BANKNAME,
   OPTIONS_SERVICE,
-  CATEGORY,
+  CATEGORIES,
   TYPE,
   URL,
   QUERY_KEY,

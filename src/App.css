@@ -219,3 +219,12 @@ input:focus {
 .ant-spin-dot i {
   background-color: red !important; /* Màu sắc bạn muốn đặt */
 }
+
+/* Font bộ lọc */
+:where(.css-dev-only-do-not-override-y2t2ac).ant-radio-wrapper
+  span.ant-radio
+  + * {
+  font-family: 'QuickSand';
+  font-weight: 400;
+  font-size: 16px;
+}

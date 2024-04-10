@@ -1,9 +1,12 @@
 import ContainerBody from '@/layout/Container'
 // import ContainerRegister from '@/layout/Container/Register'
-import Home from '@/pages/Home'
 import Account from '@/pages/account/Account'
 import ChangePlan from '@/pages/account/ChangePlan'
 import SetupRecharge from '@/pages/account/SetupRecharge'
+import Cart from '@/pages/cart/Cart'
+import Admin from '@/pages/crud/Admin'
+import Movie from '@/pages/crud/Movie'
+import User from '@/pages/crud/User'
 import DashBoard from '@/pages/dashBoard/DashBoard'
 import DetailMovie from '@/pages/detailMovie/DetailMovie'
 import ManagaAdmin from '@/pages/manage/ManageAdmin'
@@ -12,19 +15,20 @@ import ManagaUser from '@/pages/manage/ManageUser'
 import SeriesMovie from '@/pages/seriesMovie/SeriesMovie'
 import Settings from '@/pages/settings/Settings'
 import SingleMovie from '@/pages/singleMovie/SingleMovie'
-import Movie from '@/pages/crud/Movie'
 import UserListMovie from '@/pages/userListMovie/UserListMovie'
 import Watch from '@/pages/watch/Watch'
 import { URL } from '@/utils/constants'
 import { Route, Routes } from 'react-router-dom'
-import User from '@/pages/crud/User'
-import Admin from '@/pages/crud/Admin'
 
 const Root = () => {
   return (
     <Routes>
       <Route element={<ContainerBody />}>
-        <Route path={URL.HOME} element={<Home />} />
+        <Route path={URL.CART} element={<Cart />} />
+        <Route path={URL.ACCOUNT} element={<Account />} />
+        <Route path={`${URL.ACCOUNT}/:action`} element={<Account />} />
+        <Route path={`${URL.ACCOUNT}/:action/:id`} element={<Account />} />
+
         <Route path={URL.SERIES_MOVIE} element={<SeriesMovie />} />
         <Route path={URL.SINGLE_MOVIE} element={<SingleMovie />} />
         <Route path={`${URL.DETAIL_MOVIE}/:id`} element={<DetailMovie />} />
@@ -35,7 +39,7 @@ const Root = () => {
         <Route path={`${URL.MOVIE}/:type/:id`} element={<Movie />} />
         <Route path={`${URL.ADMIN}/:type`} element={<Admin />} />
         <Route path={`${URL.ADMIN}/:type/:id`} element={<Admin />} />
-        <Route path={URL.ACCOUNT} element={<Account />} />
+
         <Route path={URL.DASH_BOARD} element={<DashBoard />} />
         <Route path={URL.MANAGE_MOVIE} element={<ManagaMovie />} />
         <Route

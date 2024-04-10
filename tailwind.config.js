@@ -30,6 +30,8 @@ export default {
           primary: 'rgb(170 170 170)',
           secondary: 'rgba(0, 0, 0, 0.88)',
           disable: '#ebebeb',
+          border: '#e8e8e8',
+          borderSecondary: '#d9d9d9',
         },
 
         blue: {
@@ -42,6 +44,7 @@ export default {
           cancel: '#0958d9',
         },
         green: {
+          main: '#01921d',
           primary: 'rgba(3, 157, 18, 1)',
           secondary: 'rgba(75, 121, 2, 1)',
           ok: '#0bb51c',
@@ -59,6 +62,8 @@ export default {
         },
         yellow: {
           primary: '#fcb900',
+          main: '#ffcf21',
+          menu: '#ffc107',
         },
         brown: {
           primary: '#7f7f7f',
@@ -66,12 +71,20 @@ export default {
         black: {
           primary: '#141414',
           main: '#0b0b0b',
+          nur: '#4c4c4c',
         },
         whiteForm: '#ffffffc9',
       },
       fontFamily: {
         home: 'Calistoga',
+        QuicksandBold: 'Quicksand Bold',
+        QuicksandBook: 'Quicksand Book',
+        QuicksandLight: 'Quicksand Light',
+        Quicksand: 'Quicksand',
       },
+    },
+    boxShadow: {
+      border: '0px 0px 7px -2px #ffcc00',
     },
   },
   plugins: [],

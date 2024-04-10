@@ -309,7 +309,25 @@ const getSum = (arr: any) => {
   return sum
 }
 
+const handleFilterCategoryFromDataRes = (value: number, products: any) => {
+  switch (value) {
+    case 0:
+      return products?.klm
+    case 1:
+      return products?.btc
+    case 2:
+      return products?.kkdn
+    case 3:
+      return products?.kn
+    case 4:
+      return products?.mhs
+    default:
+      return []
+  }
+}
+
 export {
+  handleFilterCategoryFromDataRes,
   getSum,
   reverseStringDay,
   getUnique,

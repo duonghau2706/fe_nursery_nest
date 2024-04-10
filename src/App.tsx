@@ -11,13 +11,21 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import ProductItemDetail from './components/product/ProductItemDetail'
+import ContainerBody from './layout/Container'
+import Home from './pages/Home'
+import About from './pages/about/About'
+import Blog from './pages/blog/Blog'
 import Register from './pages/common/Register'
+import Contact from './pages/contact/Contact'
+import Payment from './pages/payment/Payment'
 import CreditOptions from './pages/register/CreditOptions'
-import Payment from './pages/register/Payment'
 import PlanForm from './pages/register/PlanForm'
 import Regis from './pages/register/Regis'
 import SetupPayment from './pages/register/SetupPayment'
 import { URL } from './utils/constants'
+import PaymentSuccess from './pages/payment/PaymentSuccess'
+import Category from './pages/category/Category'
 
 dayjs.extend(weekday)
 dayjs.extend(localeData)
@@ -64,6 +72,24 @@ function App() {
                 <Route path={URL.PAYMENT} element={<Payment />} />
                 <Route path={URL.SETUP_PAYMENT} element={<SetupPayment />} />
                 <Route path={URL.RECHARGE} element={<CreditOptions />} />
+
+                <Route path={URL.THANKYOU} element={<PaymentSuccess />} />
+                <Route path={URL.PAYMENT} element={<Payment />} />
+                <Route element={<ContainerBody />}>
+                  <Route path={URL.HOME} element={<Home />} />
+                  <Route
+                    path={`${URL.CATEGORY}/:type`}
+                    element={<Category />}
+                  />
+                  <Route
+                    path={`${URL.PRODUCT}/:id`}
+                    element={<ProductItemDetail />}
+                  />
+                  <Route path={URL.ABOUT} element={<About />} />
+                  <Route path={URL.CONTACT} element={<Contact />} />
+                  <Route path={URL.BLOG} element={<Blog />} />
+                </Route>
+
                 <Route element={<Authentication />}>
                   <Route path="/*" element={<Root />} />
                 </Route>

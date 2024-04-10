@@ -5,6 +5,7 @@ import 'antd/dist/reset.css'
 import './index.css'
 import { Provider } from 'react-redux'
 import { combineReducers, legacy_createStore as createStore } from 'redux'
+import { cartReducers } from './stores/reducers'
 // import { navbarScroll } from '@/stores/reducers/index'
 
 declare global {
@@ -13,7 +14,7 @@ declare global {
   }
 }
 
-const rootReducer = combineReducers({})
+const rootReducer = combineReducers({ cartReducers })
 
 const reduxStore = createStore(
   rootReducer,

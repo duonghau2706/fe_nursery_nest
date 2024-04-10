@@ -1,66 +1,33 @@
 /* eslint-disable no-unused-vars */
 import { URL } from '@/utils/constants'
-import { Button, Checkbox, Col, ConfigProvider, Form, Input } from 'antd'
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Button, ConfigProvider, Form, Input } from 'antd'
+import { useNavigate } from 'react-router-dom'
 
 // import useInput from '@/hook/use-input'
-import bgHome from '@/assets/image/home.jpg'
-import logoSANSAN from '@/assets/image/logoSANSAN.png'
-import type { CheckboxChangeEvent } from 'antd/es/checkbox'
 import { useMutation } from 'react-query'
 
-import { loginApi, userApi } from '@/adapter'
+import { loginApi } from '@/adapter'
 import { toast } from 'react-toastify'
 
 /* eslint-disable no-template-curly-in-string */
-const validateMessages = {
-  required: '${label} is required!',
-  types: {
-    email: '${label} is not a valid email!',
-  },
-}
+// const validateMessages = {
+//   required: '${label} is required!',
+//   types: {
+//     email: '${label} is not a valid email!',
+//   },
+// }
 // const windowProps = `toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, width=800, height=800`
 
 const Login = () => {
   const navigate = useNavigate()
   const [form] = Form.useForm()
-  const [showMessage, setShowMessage] = useState('')
-
-  //update status is_member
-  const mutationUpdateStatus = useMutation({
-    mutationFn: (params: any) => userApi.updateStatusMember(params),
-    onSuccess: () => {
-      // toast.success('Vui ')
-
-      mutationLogin.mutate({
-        email: form.getFieldValue('email'),
-        password: form.getFieldValue('password'),
-      })
-    },
-  })
-
-  const loginHandler = () => {
-    const email = form.getFieldValue('email')
-    const password = form.getFieldValue('password')
-
-    if (email && !password) {
-      setShowMessage('Mật khẩu phải chứa từ 4 đến 60 ký tự.')
-    } else if (!email && password) {
-      setShowMessage('Vui lòng nhập email hợp lệ.')
-    } else if (!email && !password) {
-      setShowMessage('Vui lòng nhập tài khoản hợp lệ.')
-    } else {
-      mutationUpdateStatus.mutate({ email })
-    }
-  }
+  // const [showMessage, setShowMessage] = useState('')
 
   const mutationLogin = useMutation({
     mutationFn: (params: any) => loginApi.postLogin(params),
     onSuccess: (res) => {
-      res.data.token
-        ? navigate(URL.HOME)
-        : setShowMessage('Tài khoản hoặc mật khẩu không đúng.')
+      res.data.token && navigate(URL.HOME)
+      // : setShowMessage('Tài khoản hoặc mật khẩu không đúng.')
       localStorage.setItem('token', res?.data?.token)
     },
     onError: () => {
@@ -80,125 +47,165 @@ const Login = () => {
   //   },
   // })
 
-  const onChange = (e: CheckboxChangeEvent) => {
-    // console.log(`checked = ${e.target.checked}`)
+  // const onChange = (e: CheckboxChangeEvent) => {
+  //   // console.log(`checked = ${e.target.checked}`)
+  // }
+
+  const handlerLogin = () => {
+    mutationLogin.mutate({
+      email: form.getFieldValue('email'),
+      password: form.getFieldValue('password'),
+    })
   }
 
   return (
     <div
-      className="w-screen h-screen bg-auto relative"
+      className="bg-auto relative flex items-center"
       style={{
-        background: `linear-gradient(to top,
-      rgba(0, 0, 0, 0.25) 0%,
-      rgba(0, 0, 0, 0.5) 100%), repeating-linear-gradient(to bottom,
-      rgba(0, 0, 0, 0.25) 0%,
-      rgba(0, 0, 0, 0.5) 100%),
-    url(${bgHome})`,
+        background: `linear-gradient(to bottom, rgba(1, 146, 29, 1) 0%, rgba(139, 227, 54, 1) 100%)`,
       }}
+      //   style={{
+      //     background: `linear-gradient(to top,
+      //   rgba(0, 0, 0, 0.25) 0%,
+      //   rgba(0, 0, 0, 0.5) 100%), repeating-linear-gradient(to bottom,
+      //   rgba(0, 0, 0, 0.25) 0%,
+      //   rgba(0, 0, 0, 0.5) 100%),
+      // url(${bgHome})`,
+      //   }}
     >
-      <header className="px-[7%] py-[30px] flex items-center justify-between">
-        <img className="h-[40px]" src={logoSANSAN} alt="logo netflix" />
-      </header>
+      <div
+        className=" mx-auto w-2/5 rounded-[10px] text-[#ffffff] my-5"
+        style={{
+          border: '1px solid rgba(255,255,255,0.5)',
+          backgroundColor: 'rgba(255,255,255,0.1)',
+          boxShadow: '0px 25px 45px rgba(0,0,0,0.1)',
+        }}
+      >
+        <div className="px-8 py-5 text-center">
+          <div className="text-[28px] mb-2 font-QuicksandBold">Đăng nhập</div>
+          <div className="text-[13px] mb-3">
+            Trang chủ / Đăng nhập tài khoản
+          </div>
 
-      <main className="flex justify-center">
-        <Col
-          span={7}
-          className="w-full px-[50px] bg-[#000000bf] rounded-[7px] pt-[30px] pb-[30px]"
-        >
-          <h1
-            className={
-              showMessage.length > 0 ? 'text-[2rem] mb-0' : 'text-[2rem]'
-            }
-          >
-            Đăng nhập
-          </h1>
-          {showMessage.length > 0 && (
-            <div className="text-red-600 my-1">{showMessage}</div>
-          )}
-          <Form form={form} validateMessages={validateMessages}>
-            <Form.Item name="email">
-              <Input className="mb-3 h-10" placeholder="Email" />
-            </Form.Item>
-
-            <Form.Item name="password">
-              <Input
-                className="mb-7 h-10"
-                type="password"
-                placeholder="Mật khẩu"
-              />
-            </Form.Item>
-          </Form>
-          <div>
-            <Button
-              className="w-full bg-red-primary text-white text-[16px] font-semibold border-none hover:bg-red-secondary py-5 items-center flex justify-center"
-              htmlType="submit"
-              onClick={loginHandler}
+          <Form form={form}>
+            <div
+              className="border-[2px] solid border-[red] mb-4 mx-2"
+              style={{ boxShadow: '0px 5px 15px rgba(0,0,0,0.05)' }}
             >
-              Đăng nhập
-            </Button>
-            <div className="flex mt-2 justify-between">
               <ConfigProvider
                 theme={{
                   token: {
-                    colorPrimary: '#1677ff',
+                    colorText: 'white',
+                  },
+                  components: {
+                    Input: {
+                      activeBg: '#ffffff33',
+                    },
                   },
                 }}
               >
-                <Checkbox
-                  className="flex items-center text-[#b3b3b3] text-[13px]"
-                  onChange={onChange}
-                >
-                  Ghi nhớ tôi
-                </Checkbox>
+                <Form.Item name="email">
+                  <Input
+                    size="large"
+                    placeholder="Email"
+                    className="h-[42px] rounded-[20px] px-5 placeholder:text-[#ffffff] bg-[#ffffff33] border-none hover:bg-[#ffffff33]"
+                    style={{ boxShadow: '0px 5px 15px rgba(0,0,0,0.05)' }}
+                  />
+                </Form.Item>
               </ConfigProvider>
-              <div className="flex items-center text-[13px] text-[#b3b3b3]">
-                Bạn cần trợ giúp?
-              </div>
             </div>
-            <div>
-              <div className=" flex mt-10 text-[#737373]">
-                <p className="mr-3 ">Bạn mới tham gia Netflix?</p>
-                <Link className="text-white" to={URL.REGISTER}>
-                  Đăng ký ngay.
-                </Link>
-              </div>
-              <div className="text-[13px]">
-                <p className="text-[#8c8c8c]">
-                  Trang này được Google reCAPTCHA bảo vệ để đảm bảo bạn không
-                  phải là robot.
-                  {/* <p>Tìm hiểu thêm</p> */}
-                </p>
-              </div>
+            <div
+              className="border-[2px] solid border-[red] mb-4 mx-2"
+              style={{ boxShadow: '0px 5px 15px rgba(0,0,0,0.05)' }}
+            >
+              <ConfigProvider
+                theme={{
+                  token: {
+                    colorText: 'white',
+                  },
+                  components: {
+                    Input: {
+                      activeBg: '#ffffff33',
+                    },
+                  },
+                }}
+              >
+                <Form.Item name="password">
+                  <Input
+                    size="large"
+                    placeholder="Mật khẩu"
+                    className="h-[42px] rounded-[20px] px-5 placeholder:text-[#ffffff] bg-[#ffffff33] border-none hover:bg-[#ffffff33]"
+                    style={{ boxShadow: '0px 5px 15px rgba(0,0,0,0.05)' }}
+                  />
+                </Form.Item>
+              </ConfigProvider>
+            </div>
+          </Form>
+
+          <div className="flex justify-between pb-3 mt-1 mx-2">
+            <ConfigProvider
+              theme={{
+                token: {
+                  colorBgContainerDisabled: 'red',
+                  colorPrimaryHover: 'black',
+                },
+              }}
+            >
+              <Button className="flex h-[43px] rounded-[30px] border-none hover:bg-[#ffd000] bg-[#FFCC00] ">
+                <div
+                  className="text-[17px] h-full flex items-center font-semibold text-[#ffffff]"
+                  onClick={handlerLogin}
+                >
+                  Đăng nhập
+                </div>
+              </Button>
+            </ConfigProvider>
+
+            <div className="font-QuicksandBold flex items-center">
+              Quên mật khẩu?
             </div>
           </div>
-        </Col>
-      </main>
+
+          <div className="h-[1px] bg-[#ffffff] my-5"></div>
+
+          <div>
+            <div className="text-[28px] mb-2 font-QuicksandBold">Đăng ký</div>
+            <div className="px-2 py-2 border-[1px] border-white border-solid rounded-[5px]">
+              Tạo tài khoản để quản lý đơn hàng, và các thông tin thanh toán,
+              gửi hàng một cách đơn giản hơn.
+            </div>
+            <div className="mt-3">
+              <ConfigProvider
+                theme={{
+                  token: {
+                    colorBgContainerDisabled: 'red',
+                    colorPrimaryHover: 'black',
+                  },
+                }}
+              >
+                <Button
+                  onClick={() => navigate(URL.REGISTER)}
+                  className="flex h-[43px] rounded-[30px] border-none hover:bg-[#ffd000] bg-[#A0E17A] w-full justify-center mt-2"
+                >
+                  <div className="text-[17px] h-full flex items-center font-semibold text-[#ffffff]">
+                    Tạo tài khoản
+                  </div>
+                </Button>
+
+                <Button
+                  onClick={() => navigate(URL.HOME)}
+                  className="flex h-[43px] rounded-[30px] border-none hover:bg-[#ffd000] bg-[#A0E17A] w-full justify-center mt-2"
+                >
+                  <div className="text-[17px] h-full flex items-center font-semibold text-[#ffffff]">
+                    Quay về trang chủ
+                  </div>
+                </Button>
+              </ConfigProvider>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
-
-  // return (
-  //   <div className="w-full h-[100vh] px-8 flex items-center justify-center bg-blue-fouth">
-  //     <div className=" w-[1200px] h-[600px] flex ">
-  //       <div className="w-2/3 h-full bg-admin-login bg-no-repeat bg-center bg-cover"></div>
-  //       <div className="w-1/3 py-10 lg:gap-4 gap-2 bg-white">
-  //         <div className="w-[120px] h-[120px] bg-login-logo bg-no-repeat bg-center bg-contain mx-auto"></div>
-  //         <p className="font-bold lg:text-xl text-black text-center">
-  //           Enjoy Your Journey With Us
-  //         </p>
-  //         <div className="mt-8">
-  //           <p className="font-bold lg:text-3xl text-black text-center">
-  //             Đăng nhập
-  //           </p>
-  //           <Button
-  //             className="w-80 h-14 mx-auto block text-white mt-40 text-base font-bold bg-orange-primary"
-  //             onClick={handleLoginMsTeams}
-  //           >
-  //             Đăng nhập qua Microsoft Teams
-  //           </Button>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   </div>
-  // )
 }
 export default Login

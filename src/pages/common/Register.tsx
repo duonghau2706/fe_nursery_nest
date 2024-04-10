@@ -1,264 +1,257 @@
-import { Button, Col, ConfigProvider, Form, Input, Row } from 'antd'
+/* eslint-disable no-unused-vars */
+import { URL } from '@/utils/constants'
+import { Button, ConfigProvider, Form, Input } from 'antd'
 import { useNavigate } from 'react-router-dom'
 
-import { loginApi } from '@/adapter'
-import accountApi from '@/adapter/account'
-import bgRegister from '@/assets/image/bg-register.jpg'
-import ContainerRegister from '@/layout/Container/Register'
-import { URL } from '@/utils/constants'
-import { createTimeStampFromMoment, create_UUID } from '@/utils/helper'
-import moment from 'moment'
-import { useState } from 'react'
+// import useInput from '@/hook/use-input'
 import { useMutation } from 'react-query'
+
+import { loginApi } from '@/adapter'
 import { toast } from 'react-toastify'
+
+/* eslint-disable no-template-curly-in-string */
+// const validateMessages = {
+//   required: '${label} is required!',
+//   types: {
+//     email: '${label} is not a valid email!',
+//   },
+// }
+// const windowProps = `toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, width=800, height=800`
 
 const Register = () => {
   const navigate = useNavigate()
   const [form] = Form.useForm()
-  const [emailRegister, setEmailRegister] = useState('')
-  const [passwordRegister, setPasswordRegister] = useState()
-  const [messageBtn, setMessageBtn] = useState('Bắt đầu')
-  const [showMessage, setShowMessage]: any = useState('')
+  // const [showMessage, setShowMessage] = useState('')
 
-  const handleStart = () => {
-    // const emailEntered = form.getFieldValue('emailEntered')
-    // console.log('emailEntered', emailEntered)
-    if (!emailRegister.includes('@')) {
-      setShowMessage('Vui lòng nhập email hợp lệ.')
-      return
-    } else {
-      setShowMessage(undefined)
-      mutationExistedEmail.mutate({ email: emailRegister })
-    }
-    // if (!emailRegister) {
-    //   setShowMessage('Vui lòng nhập email hợp lệ.')
-    //   return
-    // }
-    //check email toonf tai chua
-
-    // !emailExisted && setEmailRegister(emailEntered)
-  }
-  const handleFinish = () => {
-    const passwordEntered = form.getFieldValue('passwordEntered')
-    if (!passwordEntered) {
-      setShowMessage('Mật khẩu phải chứa từ 4 đến 60 ký tự.')
-      return
-    }
-
-    setPasswordRegister(passwordEntered)
-    navigate(URL.SIGNUP, {
-      state: { emailRegister, passwordRegister },
-    })
-
-    // send mail + them user moi
-    mutationVerifyEmail.mutate({
-      email: emailRegister,
-      password: passwordEntered,
-    })
-
-    //add new account
-    mutationAddAccount.mutate({
-      id: create_UUID(),
-      gender: 1,
-      role: 0,
-      is_member: false,
-      deleted: false,
-      renewal_date: createTimeStampFromMoment(moment()),
-      created_at: createTimeStampFromMoment(moment()),
-      updated_at: createTimeStampFromMoment(moment()),
-      email: emailRegister,
-      password: passwordEntered,
-    })
-
-    //login
-    mutationLogin.mutate({ email: emailRegister, password: passwordEntered })
-  }
-
-  //login
   const mutationLogin = useMutation({
     mutationFn: (params: any) => loginApi.postLogin(params),
     onSuccess: (res) => {
+      // res.data.token
+      // ? navigate(URL.HOME)
+      // : setShowMessage('Tài khoản hoặc mật khẩu không đúng.')
       localStorage.setItem('token', res?.data?.token)
     },
-    // onError: (err) => {
-    //   console.log('err', err)
-    // },
-  })
-
-  const mutationAddAccount = useMutation({
-    mutationFn: (params: any) => accountApi.addNewAccount(params),
-    onSuccess: () => {
-      // toast.success('ok')
-    },
-  })
-
-  const mutationExistedEmail = useMutation({
-    mutationFn: (params: any) => accountApi.getUserByEmail(params),
-    onSuccess: (res) => {
-      if (res?.data?.data?.listUser > 0) {
-        setShowMessage('Email đã tồn tại. Nhập địa chỉ email khác.')
-        setMessageBtn('Bắt đầu')
-      } else {
-        setMessageBtn('Đăng ký')
-      }
-    },
-  })
-
-  const mutationVerifyEmail = useMutation({
-    mutationFn: (params: any) => accountApi.verifyEmailRegistered(params),
-    onSuccess: () => {
-      toast.success(
-        'Tạo tài khoản thành công. Vui lòng kiểm tra email đã đăng ký!',
-        {
-          autoClose: 3000, // Tự đóng sau 3000ms (3 giây)
-          style: { marginTop: '50px' }, // Thêm style tùy chỉnh
-        }
-      )
-
-      // setTimeout(() => {
-      navigate(URL.SIGNUP)
-      // }, 3000)
-    },
     onError: () => {
-      toast.error('Có lỗi xảy ra. Vui lòng xem lại!', {
-        autoClose: 3000, // Tự đóng sau 3000ms (3 giây)
-        style: { marginTop: '50px' }, // Thêm style tùy chỉnh
-      })
+      toast.error('Tài khoản hoặc mật khẩu không đúng.')
     },
   })
 
-  const validateEmail = (emailText: any) => {
-    // setIsTouched(true)
-    // if (!emailText?.target?.value?.includes('@')) {
-    //   setShowMessage('Vui lòng nhập email hợp lệ.')
-    // } else {
-    //   setShowMessage(undefined)
-    // }
-    setEmailRegister(emailText?.target?.value)
+  // const { data } = useQuery({
+  //   queryKey: [QUERY_KEY.LOGIN, enteredAccount, enteredPass],
+  //   queryFn: () => {
+  //     loginApi
+  //       .postLogin({ email: enteredAccount, passsword: enteredPass })
+  //       .then((res) => {
+  //         console.log('res', res)
+  //         return res
+  //       })
+  //   },
+  // })
+
+  // const onChange = (e: CheckboxChangeEvent) => {
+  //   // console.log(`checked = ${e.target.checked}`)
+  // }
+
+  const handlerLogin = () => {
+    mutationLogin.mutate({
+      email: form.getFieldValue('email'),
+      password: form.getFieldValue('password'),
+    })
   }
 
   return (
     <div
-      className="bg-auto relative w-screen h-screen"
+      className="bg-auto relative flex items-center"
       style={{
-        background: `linear-gradient(to top,
-      rgba(0, 0, 0, 0.25) 0%,
-      rgba(0, 0, 0, 0.5) 100%), repeating-linear-gradient(to bottom,
-      rgba(0, 0, 0, 0.25) 0%,
-      rgba(0, 0, 0, 0.5) 100%),
-    url(${bgRegister})`,
+        background: `linear-gradient(to bottom, rgba(1, 146, 29, 1) 0%, rgba(139, 227, 54, 1) 100%)`,
       }}
+      //   style={{
+      //     background: `linear-gradient(to top,
+      //   rgba(0, 0, 0, 0.25) 0%,
+      //   rgba(0, 0, 0, 0.5) 100%), repeating-linear-gradient(to bottom,
+      //   rgba(0, 0, 0, 0.25) 0%,
+      //   rgba(0, 0, 0, 0.5) 100%),
+      // url(${bgHome})`,
+      //   }}
     >
-      <ContainerRegister />
-      <div className="w-full flex flex-col items-center justify-center text-white mt-[30px] text-center">
-        <h1 className="w-full px-40 text-[40px] flex justify-center items-center font-bold">
-          Chương trình truyền hình, phim không giới hạn và nhiều nội dung khác
-        </h1>
-        <h2>Xem ở mọi nơi. Hủy bất kỳ lúc nào.</h2>
-        <p>
-          Bạn đã sẵn sàng xem chưa? Nhập email để tạo hoặc kích hoạt lại tư cách
-          thành viên của bạn.
-        </p>
-        {messageBtn === 'Bắt đầu' ? (
-          <Form form={form} className="w-[35%]">
-            <Form.Item name="emailEntered" className="w-full">
-              <Row gutter={5} className="w-full flex">
-                <Col span={16}>
-                  <ConfigProvider
-                    theme={{
-                      components: {
-                        Input: {
-                          activeBorderColor: 'white',
-                          hoverBorderColor: 'white',
-                        },
-                      },
-                    }}
-                  >
-                    <Input
-                      className="w-full h-full border-[#2bb871] py-[10px] outline-none bg-[#161616b3] text-white placeholder:text-white"
-                      onChange={validateEmail}
-                      placeholder="Địa chỉ email"
-                    />
-                  </ConfigProvider>
-                </Col>
+      <div
+        className=" mx-auto w-2/5 rounded-[10px] text-[#ffffff] my-5"
+        style={{
+          border: '1px solid rgba(255,255,255,0.5)',
+          backgroundColor: 'rgba(255,255,255,0.1)',
+          boxShadow: '0px 25px 45px rgba(0,0,0,0.1)',
+        }}
+      >
+        <div className="px-8 py-5 text-center">
+          <div className="text-[28px] mb-2 font-QuicksandBold">
+            Đăng ký tài khoản
+          </div>
+          <div className="text-[13px] mb-3">Trang chủ / Đăng ký tài khoản</div>
 
-                <Col span={8}>
-                  <ConfigProvider
-                    theme={{
-                      token: {
-                        colorPrimary: 'white',
-                      },
-                    }}
-                  >
-                    <Button
-                      className="w-full h-full font-semibold bg-red-primary border-none text-white text-[18px] cursor-pointer hover:bg-red-secondary"
-                      onClick={handleStart}
-                      // htmlType="submit"
-                    >
-                      {messageBtn}
-                    </Button>
-                  </ConfigProvider>
-                </Col>
-              </Row>
-              {showMessage?.trim().length > 0 && (
-                <div className="text-red-600 my-1 flex justify-start">
-                  {showMessage}
-                </div>
-              )}
-            </Form.Item>
-          </Form>
-        ) : (
-          <Form form={form} className="w-[35%]">
-            <Form.Item name="passwordEntered" className="w-full">
-              <Row gutter={5} className="w-full flex">
-                <Col span={16}>
-                  <ConfigProvider
-                    theme={{
-                      components: {
-                        Input: {
-                          activeBorderColor: 'white',
-                          hoverBorderColor: 'white',
-                        },
-                      },
-                    }}
-                  >
-                    <Input
-                      className="w-full h-full border-[#2bb871] py-[10px] outline-none bg-[#161616b3] text-white placeholder:text-white"
-                      placeholder="Nhập mật khẩu"
-                      type="password"
-                    />
-                  </ConfigProvider>
-                </Col>
+          <Form form={form}>
+            <div
+              className="border-[2px] solid border-[red] mb-4 mx-2"
+              style={{ boxShadow: '0px 5px 15px rgba(0,0,0,0.05)' }}
+            >
+              <ConfigProvider
+                theme={{
+                  token: {
+                    colorText: 'white',
+                  },
+                  components: {
+                    Input: {
+                      activeBg: '#ffffff33',
+                    },
+                  },
+                }}
+              >
+                <Form.Item name="lastName">
+                  <Input
+                    size="large"
+                    placeholder="Tên"
+                    className="h-[42px] rounded-[20px] px-5 placeholder:text-[#ffffff] bg-[#ffffff33] border-none hover:bg-[#ffffff33]"
+                    style={{ boxShadow: '0px 5px 15px rgba(0,0,0,0.05)' }}
+                  />
+                </Form.Item>
+              </ConfigProvider>
+            </div>
 
-                <Col span={8}>
-                  <ConfigProvider
-                    theme={{
-                      token: {
-                        colorPrimary: 'white',
-                      },
-                    }}
-                  >
-                    <Button
-                      className="w-full h-full font-semibold bg-red-primary border-none text-white text-[18px] cursor-pointer hover:bg-red-secondary"
-                      onClick={handleFinish}
-                      // htmlType="submit"
-                    >
-                      {messageBtn}
-                    </Button>
-                  </ConfigProvider>
-                </Col>
-              </Row>
-              {showMessage?.trim().length > 0 && (
-                <div className="text-red-600 my-1 flex justify-start">
-                  {showMessage}
-                </div>
-              )}
-            </Form.Item>
+            <div
+              className="border-[2px] solid border-[red] mb-4 mx-2"
+              style={{ boxShadow: '0px 5px 15px rgba(0,0,0,0.05)' }}
+            >
+              <ConfigProvider
+                theme={{
+                  token: {
+                    colorText: 'white',
+                  },
+                  components: {
+                    Input: {
+                      activeBg: '#ffffff33',
+                    },
+                  },
+                }}
+              >
+                <Form.Item name="firstName">
+                  <Input
+                    size="large"
+                    placeholder="Họ "
+                    className="h-[42px] rounded-[20px] px-5 placeholder:text-[#ffffff] bg-[#ffffff33] border-none hover:bg-[#ffffff33]"
+                    style={{ boxShadow: '0px 5px 15px rgba(0,0,0,0.05)' }}
+                  />
+                </Form.Item>
+              </ConfigProvider>
+            </div>
+
+            <div
+              className="border-[2px] solid border-[red] mb-4 mx-2"
+              style={{ boxShadow: '0px 5px 15px rgba(0,0,0,0.05)' }}
+            >
+              <ConfigProvider
+                theme={{
+                  token: {
+                    colorText: 'white',
+                  },
+                  components: {
+                    Input: {
+                      activeBg: '#ffffff33',
+                    },
+                  },
+                }}
+              >
+                <Form.Item name="email">
+                  <Input
+                    size="large"
+                    placeholder="Email"
+                    className="h-[42px] rounded-[20px] px-5 placeholder:text-[#ffffff] bg-[#ffffff33] border-none hover:bg-[#ffffff33]"
+                    style={{ boxShadow: '0px 5px 15px rgba(0,0,0,0.05)' }}
+                  />
+                </Form.Item>
+              </ConfigProvider>
+            </div>
+            <div
+              className="border-[2px] solid border-[red] mb-4 mx-2"
+              style={{ boxShadow: '0px 5px 15px rgba(0,0,0,0.05)' }}
+            >
+              <ConfigProvider
+                theme={{
+                  token: {
+                    colorText: 'white',
+                  },
+                  components: {
+                    Input: {
+                      activeBg: '#ffffff33',
+                    },
+                  },
+                }}
+              >
+                <Form.Item name="password">
+                  <Input
+                    size="large"
+                    placeholder="Mật khẩu"
+                    className="h-[42px] rounded-[20px] px-5 placeholder:text-[#ffffff] bg-[#ffffff33] border-none hover:bg-[#ffffff33]"
+                    style={{ boxShadow: '0px 5px 15px rgba(0,0,0,0.05)' }}
+                  />
+                </Form.Item>
+              </ConfigProvider>
+            </div>
           </Form>
-        )}
+
+          <div className="flex justify-between pb-3 mt-1 mx-2">
+            <ConfigProvider
+              theme={{
+                token: {
+                  colorBgContainerDisabled: 'red',
+                  colorPrimaryHover: 'black',
+                },
+              }}
+            >
+              <Button className="flex w-full h-[43px] rounded-[30px] border-none hover:bg-[#ffd000] bg-[#ffffff33]">
+                <div
+                  className="text-[17px] h-full flex items-center mx-auto font-semibold text-[#ffffff]"
+                  onClick={handlerLogin}
+                >
+                  Đăng ký
+                </div>
+              </Button>
+            </ConfigProvider>
+          </div>
+
+          <div className="h-[1px] bg-[#ffffff] my-5"></div>
+
+          <div>
+            <div className="mt-3">
+              <ConfigProvider
+                theme={{
+                  token: {
+                    colorBgContainerDisabled: 'red',
+                    colorPrimaryHover: 'black',
+                  },
+                }}
+              >
+                <Button
+                  onClick={() => navigate(URL.LOGIN)}
+                  className="flex h-[43px] rounded-[30px] border-none hover:bg-[#ffd000] bg-[#A0E17A] w-full justify-center mt-2"
+                >
+                  <div className="text-[17px] h-full flex items-center font-semibold text-[#ffffff]">
+                    Đăng nhập
+                  </div>
+                </Button>
+
+                <Button
+                  onClick={() => navigate(URL.HOME)}
+                  className="flex h-[43px] rounded-[30px] border-none hover:bg-[#ffd000] bg-[#A0E17A] w-full justify-center mt-2"
+                >
+                  <div className="text-[17px] h-full flex items-center font-semibold text-[#ffffff]">
+                    Quay về trang chủ
+                  </div>
+                </Button>
+              </ConfigProvider>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
 }
-
 export default Register
