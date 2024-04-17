@@ -26,6 +26,7 @@ import SetupPayment from './pages/register/SetupPayment'
 import { URL } from './utils/constants'
 import PaymentSuccess from './pages/payment/PaymentSuccess'
 import Category from './pages/category/Category'
+import BlogDetail from './pages/blog/BlogDetail'
 
 dayjs.extend(weekday)
 dayjs.extend(localeData)
@@ -77,6 +78,7 @@ function App() {
                 <Route path={URL.PAYMENT} element={<Payment />} />
                 <Route element={<ContainerBody />}>
                   <Route path={URL.HOME} element={<Home />} />
+                  <Route path={`${URL.BLOG}/:id`} element={<BlogDetail />} />
                   <Route
                     path={`${URL.CATEGORY}/:type`}
                     element={<Category />}

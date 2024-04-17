@@ -1,7 +1,10 @@
+import orderApi from '@/adapter/order'
 import iconLogout from '@/assets/image/logout_account.svg'
 import iconUser from '@/assets/image/user_account.svg'
-import { URL } from '@/utils/constants'
-import { useState } from 'react'
+import useToken from '@/hook/token'
+import { QUERY_KEY, URL } from '@/utils/constants'
+import { useEffect, useState } from 'react'
+import { useQuery } from 'react-query'
 import { useLocation, useNavigate } from 'react-router-dom'
 import Order from './Order/Order'
 import OrderDetail from './OrderDetail/OrderDetail'
@@ -10,6 +13,9 @@ const Account = () => {
   const navigate = useNavigate()
   const { pathname } = useLocation()
 
+  const { verifyToken } = useToken()
+  const { decode } = verifyToken()
+
   // const [isInfo, setIsInfo] = useState<boolean>(pathname === '/account')
 
   const [isOrderedDetail, setIsOrderedDetail] = useState(
@@ -17,6 +23,19 @@ const Account = () => {
   )
 
   const [isOrdered, setIsOrdered] = useState<boolean>()
+
+  useEffect(() => {
+    setIsOrderedDetail(pathname.length > '/account/orders'.length)
+    setIsOrdered(pathname === '/account/orders')
+  }, [pathname])
+
+  const { data: dataOrders = [] } = useQuery({
+    queryKey: [QUERY_KEY.GET_ORDERS_BY_USER_ID],
+    queryFn: () =>
+      orderApi.getOrdersByUserId({ userId: decode?.id }).then((res: any) => {
+        return res?.data?.data
+      }),
+  })
 
   const logoutHandler = () => {
     localStorage.removeItem('token')
@@ -70,7 +89,7 @@ const Account = () => {
               onClick={showAccountHandler}
             >
               <div>Xin chào,</div>
-              <div className="text-green-main ml-1">Dương Hậu!</div>
+              <div className="text-green-main ml-1">{decode?.name}!</div>
             </div>
           </div>
         </div>
@@ -79,7 +98,7 @@ const Account = () => {
           <OrderDetail />
         ) : isOrdered ? (
           <div>
-            <Order setOrderDetail={setIsOrderedDetail} />
+            <Order setOrderDetail={setIsOrderedDetail} lstOrder={dataOrders} />
           </div>
         ) : (
           <div className="w-full px-4 py-3 pb-6 border-solid border-transparent rounded-[10px] bg-white">
@@ -90,22 +109,22 @@ const Account = () => {
             <div className="flex flex-col gap-[3px]">
               <div className="flex">
                 <div className="font-[800] mr-1">Họ tên:</div>
-                <div>Dương Hậu</div>
+                <div>{decode?.name}</div>
               </div>
 
               <div className="flex">
                 <div className="font-[800] mr-1">Email: </div>
-                <div>haud@gmail.com</div>
+                <div>{decode?.email}</div>
               </div>
 
               <div className="flex">
                 <div className="font-[800] mr-1">Điện thoại: </div>
-                <div>0394176287</div>
+                <div>{decode?.phone}</div>
               </div>
 
               <div className="flex">
                 <div className="font-[800] mr-1">Địa chỉ:</div>
-                <div>Street, Huyện Châu Đức, Bà Rịa-Vũng Tàu, Vietnam</div>
+                <div>{decode?.address}</div>
               </div>
             </div>
           </div>

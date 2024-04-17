@@ -48,12 +48,10 @@ const ProductItemDetail = () => {
   const { data: dataComment = {} } = useQuery({
     queryKey: [QUERY_KEY.GET_COMMENT_BY_PRODUCT_ID],
     queryFn: () =>
-      productApi.getCommentByProductId({ id: prd.id }).then((res) => {
+      productApi.getCommentByProductId({ id: prd?.id }).then((res) => {
         return res?.data?.data
       }),
   })
-
-  // console.log('dataCart', dataCart)
 
   const avgRated = dataComment?.avgRated?.[0]?.avg | 0
   const lstCommnet = dataComment?.lstCmt
@@ -70,8 +68,6 @@ const ProductItemDetail = () => {
       })
     },
   })
-
-  // console.log('prd', prd)
 
   const onAddProductHandler = () => {
     const quantity = Number(form.getFieldValue('inputQuantity'))

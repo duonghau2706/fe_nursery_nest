@@ -12,10 +12,16 @@
     "prettier": "prettier --check \"src/**/(*.tsx|*.ts|*.css|*.scss)\"",
     "prettier:fix": "prettier --write \"src/**/(*.tsx|*.ts|*.css|*.scss)\"",
     "prepare": "husky install",
-    "preview:prod": "vite preview"
+    "preview:prod": "vite preview --host"
   },
   "dependencies": {
     "@ant-design/plots": "^1.2.5",
+    "@ckeditor/ckeditor5-build-classic": "^41.3.0",
+    "@ckeditor/ckeditor5-build-decoupled-document": "^41.3.0",
+    "@ckeditor/ckeditor5-editor-decoupled": "^41.3.0",
+    "@ckeditor/ckeditor5-font": "^41.3.0",
+    "@ckeditor/ckeditor5-inspector": "^4.1.0",
+    "@ckeditor/ckeditor5-react": "^6.2.0",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@material-ui/core": "^4.12.4",
@@ -37,6 +43,7 @@
     "eslint-plugin-jsx-a11y": "^6.7.1",
     "eslint-plugin-react": "^7.32.2",
     "html-dom-parser": "^3.1.7",
+    "interweave": "^13.1.0",
     "jwt-decode": "^3.1.2",
     "lint-staged": "^13.2.0",
     "moment": "^2.29.4",

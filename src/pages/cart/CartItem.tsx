@@ -1,14 +1,16 @@
 import { queryClient } from '@/App'
 import cartApi from '@/adapter/cart'
 import useToken from '@/hook/token'
-import { QUERY_KEY } from '@/utils/constants'
+import { QUERY_KEY, URL } from '@/utils/constants'
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons'
 import { ConfigProvider, Form, Input } from 'antd'
 import { useForm } from 'antd/es/form/Form'
 import { useState } from 'react'
 import { useMutation } from 'react-query'
+import { useNavigate } from 'react-router-dom'
 
 const CartItem = ({
+  prd,
   amount,
   name,
   img,
@@ -19,18 +21,11 @@ const CartItem = ({
 any) => {
   const { verifyToken } = useToken()
   const { decode } = verifyToken()
+  const navigate = useNavigate()
 
   const [form] = useForm()
 
   const [inputQuantity, setInputQuantity] = useState(quantity)
-
-  // const { data: product = {} } = useQuery({
-  //   queryKey: [QUERY_KEY.GET_PRODUCT_BY_ID, id],
-  //   queryFn: () =>
-  //     productApi.getInfoProductById({ id }).then((res) => {
-  //       return res?.data?.data?.[0]
-  //     }),
-  // })
 
   // const onAddProductHandler = () => {
   //   const quantity = Number(form.getFieldValue('inputQuantity'))
@@ -77,13 +72,17 @@ any) => {
     })
   }
 
+  const handleViewProductDetail = () => {
+    navigate(`${URL.PRODUCT}/${productId}`, { state: { prd } })
+  }
+
   return (
     <div className="cursor-pointer gap-4 flex w-[720px] pl-3 pr-5 py-[22px] border border-solid border-gray-border hover:border-green-main hover:text-green-main rounded-[10px] text-black-primary bg-[#ffffff]">
       <img src={img} alt="img prd" className="w-[58px] h-[58px]" />
 
       <div className="flex flex-col w-full">
         <div className="flex justify-between tetx-[16px] font-[700]">
-          <div>{name}</div>
+          <div onClick={handleViewProductDetail}>{name}</div>
           <div className="text-[#ff1a00]">
             {Number(amount).toLocaleString()} ₫
           </div>

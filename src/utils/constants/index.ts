@@ -1,4 +1,11 @@
 const URL = {
+  ADMIN_BLOG: '/admin/blog',
+  ADMIN_CATEGORY: '/admin/category',
+  ADMIN_USER: '/admin/user',
+  ADMIN_PRODUCT: '/admin/product',
+  ADMIN_HOME: '/admin/home',
+  ADMIN_DISCOUNT: '/admin/discount',
+  ADMIN_COMMENT: '/admin/comment',
   CART: '/cart',
   BLOG: '/blog',
   CONTACT: '/contact',
@@ -41,6 +48,12 @@ const URL = {
 }
 
 const QUERY_KEY = {
+  GET_BLOG_BY_ID: 'GET_BLOG_BY_ID',
+  GET_ALL_BLOG: 'GET_ALL_BLOG',
+  GET_ALL_CATEGORIES: 'GET_ALL_CATEGORIES',
+  BLOG: 'BLOG',
+  GET_ORDERS_BY_USER_ID: 'GET_ORDERS_BY_USER_ID',
+  GET_ORDER_DETAIL_BY_ORDER_ID: 'GET_ORDER_DETAIL_BY_ORDER_ID',
   GET_ALL_CART: 'GET_ALL_CART',
   GET_PRODUCT_BY_ID: 'GET_PRODUCT_BY_ID',
   GET_COMMENT_BY_PRODUCT_ID: 'GET_COMMENT_BY_PRODUCT_ID',
@@ -69,6 +82,17 @@ const QUERY_KEY = {
 }
 
 const endpoint = {
+  update_blog: '/api/v1/blog/update-blog',
+  delete_blog: '/api/v1/blog/delete-blog',
+  get_all_blog: '/api/v1/blog/get-all-blog',
+  get_all_categories: '/api/v1/category/get-all-categories',
+  get_by_id: '/api/v1/blog/get-by-id',
+  create_blog: '/api/v1/blog/create',
+  get_orders_by_user_id: '/api/v1/order/get-by-user-id',
+  get_order_detail_by_order_id: '/api/v1/order-detail/get-by-order-id',
+  create_order_detail: '/api/v1/order-detail/create-order-detail',
+  create_order: '/api/v1/order/create-order',
+  get_discount_by_code: '/api/v1/discount/get-discount-by-code',
   get_all_cart: '/api/v1/cart/get-all-cart',
   update_cart: '/api/v1/cart/update-cart',
   get_info_product_by_id: '/api/v1/product/get-info-by-product-id',

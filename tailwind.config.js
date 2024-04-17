@@ -30,6 +30,7 @@ export default {
           primary: 'rgb(170 170 170)',
           secondary: 'rgba(0, 0, 0, 0.88)',
           disable: '#ebebeb',
+          inputDisable: '#0000000a',
           border: '#e8e8e8',
           borderSecondary: '#d9d9d9',
         },

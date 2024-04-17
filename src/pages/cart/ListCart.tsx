@@ -11,6 +11,7 @@ const ListCart = ({ carts }: any) => {
     <div className="flex flex-col gap-6">
       {carts?.map((cart: any) => (
         <CartItem
+          prd={cart}
           amount={cart?.amount}
           img={cart?.img}
           name={cart?.name}

@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'telemail-app',
+      name: 'likado-app',
       script: 'npm run preview:prod',
     },
   ],

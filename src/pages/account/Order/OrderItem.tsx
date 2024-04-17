@@ -1,12 +1,26 @@
 import { URL } from '@/utils/constants'
+import { renderFullrAdress } from '@/utils/helper'
+import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
 
-const OrderItem = ({ setOrderDetail }: any) => {
+const OrderItem = ({
+  setOrderDetail,
+  id,
+  orderCode,
+  statusMoney,
+  statusShip,
+  adress,
+  ward,
+  district,
+  province,
+  totalMoney,
+  createdAt,
+}: any) => {
   const navigate = useNavigate()
 
   const onSelectOrderItem = () => {
     setOrderDetail(true)
-    navigate(`${URL.ACCOUNT}/orders/1088`)
+    navigate(`${URL.ACCOUNT}/orders/${id}`)
   }
 
   return (
@@ -16,23 +30,35 @@ const OrderItem = ({ setOrderDetail }: any) => {
     >
       <div className="flex justify-between">
         <div className="flex">
-          <div className="text-[#ffcc00] font-[600]">#1088</div>
+          <div className="text-[#ffcc00] font-[600]">#{orderCode}</div>
           <div className="mx-1">-</div>
-          <div className="text-[#dc3545]">Chưa thu tiền</div>
+          <div
+            className={statusMoney === 0 ? 'text-[#dc3545]' : 'text-green-main'}
+          >
+            {statusMoney === 0 ? 'Chưa thu tiền' : 'Đã thu tiền'}
+          </div>
           <div className="mx-1">-</div>
-          <div className="text-[#dc3545]">Chưa chuyển</div>
+          <div
+            className={statusShip === 0 ? 'text-[#dc3545]' : 'text-green-main'}
+          >
+            {statusShip === 0 ? 'Chưa chuyển' : 'Đã chuyển'}
+          </div>
         </div>
 
         <div>
-          <div className="text-[#ff0000] font-[800]">57.000₫</div>
+          <div className="text-[#ff0000] font-[800]">
+            {Number(totalMoney).toLocaleString()}₫
+          </div>
         </div>
       </div>
 
       <div className="font-[800]">
-        Địa chỉ: 129 Lý Thái Tổ, Hoàng Hoa Thám, Bắc Từ Liêm, Hà Nội
+        Địa chỉ: {renderFullrAdress(adress, ward, district, province)}
       </div>
 
-      <div className="text-[14px]">Ngày: 31/03/2024</div>
+      <div className="text-[14px]">
+        Ngày: {moment(createdAt)?.format('DD/MM/YYYY')}
+      </div>
     </div>
   )
 }

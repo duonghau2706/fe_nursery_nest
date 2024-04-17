@@ -211,6 +211,26 @@ const create_UUID = () => {
   return uuid
 }
 
+const create_CODE = () => {
+  let dt = new Date().getTime()
+  const uuid = 'xxxyxxyxx'.replace(/[xy]/g, function (c) {
+    const r = (dt + Math.random() * 16) % 16 | 0
+    dt = Math.floor(dt / 16)
+    return (c == 'x' ? r : (r & 0x3) | 0x8).toString(16)
+  })
+  return uuid.toUpperCase()
+}
+
+const create_ORDER_CODE = () => {
+  let dt = new Date().getTime()
+  const orderCode = '1xxyxxyxxx'.replace(/[xy]/g, function (c) {
+    const r = (dt + Math.random() * 10) % 10 | 0
+    dt = Math.floor(dt / 10)
+    return (c == 'x' ? r : r & 0x3).toString(10)
+  })
+  return orderCode
+}
+
 const searchListMovie = (listMovie: any, input: string) => {
   const text = input ?? ''
   text.toLocaleLowerCase
@@ -326,7 +346,41 @@ const handleFilterCategoryFromDataRes = (value: number, products: any) => {
   }
 }
 
+const renderFullrAdress = (
+  adress: string,
+  ward: string,
+  district: string,
+  province: string
+) => {
+  let fullAdress = ''
+
+  if (adress) {
+    fullAdress += adress + ', '
+  }
+
+  if (ward) {
+    fullAdress += ward + ', '
+  }
+
+  if (district) {
+    fullAdress += district + ', '
+  }
+
+  if (province) {
+    fullAdress += province + ', '
+  }
+
+  const tmp = fullAdress.trim()
+  let res
+
+  if (tmp[tmp?.length - 1] === ',') return tmp.slice(0, -1)
+  else return res
+}
+
 export {
+  renderFullrAdress,
+  create_ORDER_CODE,
+  create_CODE,
   handleFilterCategoryFromDataRes,
   getSum,
   reverseStringDay,

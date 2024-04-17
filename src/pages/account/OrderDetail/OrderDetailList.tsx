@@ -1,11 +1,19 @@
 import OrderDetailItem from './OrderDetailItem'
 
-const OrderDetailList = () => {
+const OrderDetailList = ({ lstOrder }: any) => {
   return (
     <div className="flex flex-col gap-3">
-      <OrderDetailItem />
-      <OrderDetailItem />
-      <OrderDetailItem />
+      {lstOrder?.map((order: any) => (
+        <OrderDetailItem
+          key={order?.id}
+          productId={order?.productId}
+          name={order?.name}
+          originalPrice={order?.originalPrice}
+          quantity={order?.quantity}
+          img={order?.img}
+          amount={order?.amount}
+        />
+      ))}
     </div>
   )
 }

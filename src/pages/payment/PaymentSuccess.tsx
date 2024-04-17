@@ -1,11 +1,29 @@
 import bannerLikado from '@/assets/image/likado.png'
-import { URL } from '@/utils/constants'
+import { QUERY_KEY, URL } from '@/utils/constants'
 import { Button, ConfigProvider } from 'antd'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import PaymentListProduct from './PaymentListProduct'
+import useToken from '@/hook/token'
+import { useQuery } from 'react-query'
+import orderDetailApi from '@/adapter/orderDetail'
+import { renderFullrAdress } from '@/utils/helper'
 
 const PaymentSuccess = () => {
   const navigate = useNavigate()
+
+  const { state } = useLocation()
+  const { orderId } = state
+
+  const { data: dataOrderDetail = [] } = useQuery({
+    queryKey: [QUERY_KEY.GET_ORDER_DETAIL_BY_ORDER_ID],
+    queryFn: () =>
+      orderDetailApi.getByOrderId({ orderId }).then((res: any) => {
+        return res?.data?.data
+      }),
+  })
+
+  const { verifyToken } = useToken()
+  const { decode } = verifyToken()
 
   return (
     <div className="text-[14px] bg-[#f5f5f5] text-black-main min-h-[100vh]">
@@ -18,7 +36,7 @@ const PaymentSuccess = () => {
       </div>
 
       <div className="flex justify-between">
-        <div className="px-[50px]">
+        <div className="px-[50px] min-w-[60%]">
           <div className="flex">
             <div className="h-[100px]">
               <img
@@ -34,7 +52,7 @@ const PaymentSuccess = () => {
               </div>
               <div>
                 <div className="text-[13px]">
-                  Một email xác nhận đã được gửi tới cuopbien123a8@gmail.com.
+                  Một email xác nhận đã được gửi tới {decode?.email}.
                 </div>
                 <div className="text-[13px]">
                   Xin vui lòng kiểm tra email của bạn.
@@ -48,16 +66,21 @@ const PaymentSuccess = () => {
               <div className="w-1/2">
                 <div className="font-[600] text-[20px]">Thông tin mua hàng</div>
                 <div className="flex flex-col gap-[4px] mt-[6px]">
-                  <div>Duong Hau</div>
-                  <div>duonghau2706@gmail.com</div>
-                  <div>039112345</div>
+                  <div>{decode?.name}</div>
+                  <div>{decode?.email}</div>
+                  <div>{decode?.phone}</div>
                 </div>
               </div>
 
               <div className="w-1/2">
                 <div className="font-[600] text-[20px]">Địa chỉ nhận hàng</div>
                 <div className="mt-[6px]">
-                  Xã AA, Huyện BB, Tỉnh CC amamamsnncb amsn asndm anansnm
+                  {renderFullrAdress(
+                    dataOrderDetail?.[0]?.adress,
+                    dataOrderDetail?.[0]?.ward,
+                    dataOrderDetail?.[0]?.district,
+                    dataOrderDetail?.[0]?.province
+                  )}
                 </div>
               </div>
             </div>
@@ -82,24 +105,37 @@ const PaymentSuccess = () => {
 
         <div className="bg-white mr-[60px] h-full pl-[27px] pr-[10px] w-1/3 flex flex-col justify-center">
           <div className="ml-[-27px] pl-[27px] py-3 flex justify-start items-center text-[18px] font-[900] border-[1px] border-solid border-gray-borderSecondary border-x-0 border-t-0">
-            Đơn hàng #1008 (7)
+            Đơn hàng #{dataOrderDetail?.[0]?.orderCode} (
+            {Number(dataOrderDetail?.length).toLocaleString()})
           </div>
           <div className="pt-[18px] pb-4 pr-1 h-[100px] overflow-y-scroll border-[1px] border-solid border-gray-borderSecondary border-x-0 border-t-0">
-            <PaymentListProduct />
+            <PaymentListProduct lstPrd={dataOrderDetail} />
           </div>
 
           <div className="text-[#717171] font-[500] flex flex-col gap-[10px] pt-5 pb-3 border-[1px] border-solid border-gray-borderSecondary border-x-0 border-t-0">
             <div className="flex justify-between">
               <div>Tạm tính</div>
-              <div>1.346.000₫</div>
+              <div>
+                {Number(
+                  dataOrderDetail?.[0]?.originalTotalMoney
+                ).toLocaleString()}{' '}
+                ₫
+              </div>
             </div>
             <div className="flex justify-between">
               <div>Giảm giá</div>
-              <div>0₫</div>
+              <div>
+                -{' '}
+                {Number(
+                  Number(dataOrderDetail?.[0]?.sale) *
+                    Number(dataOrderDetail?.[0]?.originalTotalMoney)
+                ).toLocaleString()}{' '}
+                ₫
+              </div>
             </div>
             <div className="flex justify-between">
               <div>Phí vận chuyển </div>
-              <div>Miễn phí</div>
+              <div>{Number(dataOrderDetail?.[0]?.ship).toLocaleString()} ₫</div>
             </div>
           </div>
 
@@ -107,7 +143,7 @@ const PaymentSuccess = () => {
             <div className="flex justify-between">
               <div className="text-[16px] font-[500]">Tổng cộng</div>
               <div className="text-[21px] text-[#2a9dcc] font-[600]">
-                1.346.000₫
+                {Number(dataOrderDetail?.[0]?.totalMoney).toLocaleString()}₫
               </div>
             </div>
           </div>

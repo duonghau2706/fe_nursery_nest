@@ -1,12 +1,20 @@
+import AdminComment from '@/components/comment/AdminComment'
+import AdminProduct from '@/components/product/admin/AdminProduct'
 import ContainerBody from '@/layout/Container'
 // import ContainerRegister from '@/layout/Container/Register'
 import Account from '@/pages/account/Account'
 import ChangePlan from '@/pages/account/ChangePlan'
 import SetupRecharge from '@/pages/account/SetupRecharge'
+import AdminActionBlog from '@/pages/blog/admin/AdminActionBlog'
+import AdminBlog from '@/pages/blog/admin/AdminBlog'
 import Cart from '@/pages/cart/Cart'
-import Admin from '@/pages/crud/Admin'
+import AdminActionCategory from '@/pages/category/AdminActionCategory'
+import AdminCategory from '@/pages/category/AdminCategory'
 import Movie from '@/pages/crud/Movie'
 import User from '@/pages/crud/User'
+import AdminActionProduct from '@/pages/crud/admin/AdminActionProduct'
+import AdminDiscount from '@/pages/crud/admin/AdminDiscount'
+import AdminUser from '@/pages/crud/admin/AdminUser'
 import DashBoard from '@/pages/dashBoard/DashBoard'
 import DetailMovie from '@/pages/detailMovie/DetailMovie'
 import ManagaAdmin from '@/pages/manage/ManageAdmin'
@@ -37,10 +45,33 @@ const Root = () => {
         <Route path={`${URL.USER}/:type/:id`} element={<User />} />
         <Route path={`${URL.MOVIE}/:type`} element={<Movie />} />
         <Route path={`${URL.MOVIE}/:type/:id`} element={<Movie />} />
-        <Route path={`${URL.ADMIN}/:type`} element={<Admin />} />
-        <Route path={`${URL.ADMIN}/:type/:id`} element={<Admin />} />
 
-        <Route path={URL.DASH_BOARD} element={<DashBoard />} />
+        <Route path={`${URL.ADMIN_HOME}`} element={<DashBoard />} />
+        <Route path={`${URL.ADMIN_PRODUCT}`} element={<AdminProduct />} />
+        <Route path={`${URL.ADMIN_BLOG}`} element={<AdminBlog />} />
+        <Route path={`${URL.ADMIN_BLOG}/:type`} element={<AdminActionBlog />} />
+        <Route
+          path={`${URL.ADMIN_BLOG}/:type/:id`}
+          element={<AdminActionBlog />}
+        />
+
+        <Route path={`${URL.ADMIN_COMMENT}`} element={<AdminComment />} />
+        <Route path={`${URL.ADMIN_USER}`} element={<AdminUser />} />
+        <Route path={`${URL.ADMIN_CATEGORY}`} element={<AdminCategory />} />
+        <Route
+          path={`${URL.ADMIN_CATEGORY}/:type`}
+          element={<AdminActionCategory />}
+        />
+        <Route path={`${URL.ADMIN_DISCOUNT}`} element={<AdminDiscount />} />
+        <Route
+          path={`${URL.ADMIN_PRODUCT}/:type`}
+          element={<AdminActionProduct />}
+        />
+
+        {/* <Route path={`${URL.ADMIN}/:type`} element={<Admin />} />
+        <Route path={`${URL.ADMIN}/:type/:id`} element={<Admin />} /> */}
+
+        {/* <Route path={URL.DASH_BOARD} element={<DashBoard />} /> */}
         <Route path={URL.MANAGE_MOVIE} element={<ManagaMovie />} />
         <Route
           path={`${URL.MANAGE_MOVIE}/:currentPage`}
