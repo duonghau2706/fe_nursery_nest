@@ -40,7 +40,7 @@ const MenuAdmin = () => {
   }
 
   return (
-    <div>
+    <div className="pt-[4px] flex gap-2 cursor-pointer justify-start w-full h-full">
       <Sider
         trigger={null}
         collapsible
