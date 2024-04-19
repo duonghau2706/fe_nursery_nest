@@ -1,4 +1,22 @@
-const MainPostItem = ({ title, url, author, publish, content, index }: any) => {
+import { URL } from '@/utils/constants'
+import { Interweave } from 'interweave'
+import { useNavigate } from 'react-router-dom'
+
+const MainPostItem = ({
+  id,
+  title,
+  url,
+  author,
+  publish,
+  content,
+  index,
+}: any) => {
+  const navigate = useNavigate()
+
+  const handleViewBlogDetail = () => {
+    navigate(`${URL.BLOG}/${id}`)
+  }
+
   return (
     <div
       style={{ borderBottom: '1px solid #dee2e6' }}
@@ -6,16 +24,21 @@ const MainPostItem = ({ title, url, author, publish, content, index }: any) => {
     >
       {index % 2 === 0 ? (
         <>
-          <div className="h-[248px]">
+          <div className="h-[248px]" onClick={handleViewBlogDetail}>
             <img
               src={url}
               alt="img main post"
-              className=" h-full bg-cover cursor-pointer"
+              className="h-full bg-cover cursor-pointer mx-auto flex"
             />
           </div>
           <div>
-            <div className="font-[700] text-[28px]">{title}</div>
-            <div className="mt-1 mb-2">
+            <div
+              className="font-[700] text-[28px] leading-[1.3] cursor-pointer hover:text-green-main"
+              onClick={handleViewBlogDetail}
+            >
+              {title}
+            </div>
+            <div className="mt-[10px] mb-3">
               Đăng bởi:{' '}
               <strong>
                 {' '}
@@ -32,15 +55,20 @@ const MainPostItem = ({ title, url, author, publish, content, index }: any) => {
                 textAlign: 'justify',
               }}
             >
-              {content}
+              <Interweave content={content} className="ck-editor" />
             </div>
           </div>
         </>
       ) : (
         <>
           <div className="max-w-[650px]">
-            <div className="font-[700] text-[28px]">{title}</div>
-            <div className="mt-1 mb-2">
+            <div
+              className="font-[700] text-[28px]  leading-[1.3] cursor-pointer hover:text-green-main"
+              onClick={handleViewBlogDetail}
+            >
+              {title}
+            </div>
+            <div className="mt-[10px] mb-3">
               Đăng bởi:{' '}
               <strong>
                 {' '}
@@ -57,14 +85,15 @@ const MainPostItem = ({ title, url, author, publish, content, index }: any) => {
                 textOverflow: 'ellipsis',
               }}
             >
-              {content}
+              <Interweave content={content} className="ck-editor" />
             </div>
           </div>
-          <div className="h-[240px]">
+          <div className="w-full h-[240px]">
             <img
               src={url}
               alt="img main post"
-              className="h-full bg-cover cursor-pointer"
+              className="h-full bg-cover cursor-pointer flex mx-auto"
+              onClick={handleViewBlogDetail}
             />
           </div>
         </>

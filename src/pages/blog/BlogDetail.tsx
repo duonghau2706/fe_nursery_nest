@@ -7,6 +7,7 @@ import { QUERY_KEY } from '@/utils/constants'
 import { Interweave } from 'interweave'
 import { useParams } from 'react-router-dom'
 import ListNewBlog from './ListNewBlog'
+import moment from 'moment'
 
 const BlogDetail = () => {
   // const [content, setContent] = useState<string>()
@@ -43,6 +44,17 @@ const BlogDetail = () => {
       {/* <Interweave content={contentWrote} className="ck-content" /> */}
 
       <div className="w-3/4">
+        <div className="text-[26px] italic font-[600] text-[#4c4c4c]">
+          {dataBlog?.title}
+        </div>
+        <div className="mt-[6px] mb-3">
+          Đăng bởi:{' '}
+          <strong>
+            {' '}
+            {dataBlog?.author} -{' '}
+            {moment(dataBlog?.created_at).format('DD/MM/YYYY')}
+          </strong>
+        </div>
         <Interweave content={dataBlog?.content} className="ck-content" />
 
         {/* <Button className="bg-green-main text-white" onClick={addBlog}>

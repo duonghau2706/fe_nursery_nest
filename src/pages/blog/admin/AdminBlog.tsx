@@ -92,7 +92,7 @@ const AdminBlog = () => {
         </Button>
         <Button
           className="font-semibold flex items-center justify-center rounded-[5px] py-3 h-[37px] bg-green-ok text-white hover:bg-green-okHover"
-          onClick={() => navigate(`${URL.ADMIN_CATEGORY}/create`)}
+          onClick={() => navigate(`${URL.ADMIN_BLOG}/create`)}
         >
           Thêm bài viết
         </Button>

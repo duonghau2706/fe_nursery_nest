@@ -228,3 +228,7 @@ input:focus {
   font-weight: 400;
   font-size: 16px;
 }
+
+.ck-editor__editable {
+  max-height: 350px;
+}

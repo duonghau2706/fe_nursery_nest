@@ -1,15 +1,20 @@
 import PostItem from './PostItem'
 
-const ListPost = () => {
+const ListPost = ({}): any => {
   return (
     <div className="grid grid-cols-4 gap-[24px] mt-4">
-      <PostItem
-        img="https://bizweb.dktcdn.net/thumb/large/100/480/125/articles/1675645333dsc06883-jpg-20230206105049ywte0t5jds-thum.jpg?v=1680764459597"
-        title="Dầu tràm Cung Đình trao tiếp ă tỷ gói mèeeeeee"
-        content="Công ty Cổ phần Dầu tràm Cung Đình tặng 6 năm học bổng cho tài năng trẻ
+      {/* {lstPost?.map((post: any)=>{
+        return (
+          <PostItem
+            img="https://bizweb.dktcdn.net/thumb/large/100/480/125/articles/1675645333dsc06883-jpg-20230206105049ywte0t5jds-thum.jpg?v=1680764459597"
+            title="Dầu tràm Cung Đình trao tiếp 1 tỷ gói mèeeeeee"
+            content="Công ty Cổ phần Dầu tràm Cung Đình tặng 6 năm học bổng cho tài năng trẻ
         bóng đá Học viện Hoàng Công ty Cổ phần Dầu tràm Cung Đình tặng 6 năm học
         bổng cho tài năng trẻ bóng đá Học viện Hoàng"
-      />
+          />
+        )
+      })} */}
+
       <PostItem
         img="https://bizweb.dktcdn.net/thumb/large/100/480/125/articles/hinh-05-jpg-20230221101312aw5or1ouk-thum.jpg?v=1680764413607"
         title="DẦU TRÀM CUNG ĐÌNH TIẾP SỨC XÂY NHÀ aaaaaaaaaaaaaaaa"

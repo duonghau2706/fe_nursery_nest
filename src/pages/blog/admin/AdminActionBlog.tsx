@@ -2,14 +2,29 @@ import blogApi from '@/adapter/blog'
 import useToken from '@/hook/token'
 import { QUERY_KEY, URL } from '@/utils/constants'
 import { createTimeStampFromMoment } from '@/utils/helper'
+import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
 import DecoupledEditor from '@ckeditor/ckeditor5-build-decoupled-document'
 import { CKEditor } from '@ckeditor/ckeditor5-react'
-import { Button, Col, ConfigProvider, Form, Input, Row } from 'antd'
+import {
+  Button,
+  Col,
+  ConfigProvider,
+  Form,
+  GetProp,
+  Input,
+  Row,
+  Upload,
+  UploadFile,
+  UploadProps,
+  message,
+} from 'antd'
 import moment from 'moment'
 import { useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
+
+type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0]
 
 const AdminActionBlog = () => {
   const { verifyToken } = useToken()
@@ -31,6 +46,7 @@ const AdminActionBlog = () => {
       blogApi.getById({ blogId: id }).then((res: any) => {
         return res?.data?.data
       }),
+    enabled: !!id, //Phải có id
   })
 
   const mutationCreateBlog = useMutation({
@@ -69,11 +85,14 @@ const AdminActionBlog = () => {
 
   const onFinish = () => {
     const data = form.getFieldsValue()
+    // console.log('dât', data)
 
     if (type === 'create') {
       mutationCreateBlog.mutate({
         ...data,
         // id: create_UUID(),
+        title: data?.title,
+        author: data?.name,
         content,
         created_by: decode?.name,
         created_at: createTimeStampFromMoment(moment()),
@@ -90,6 +109,66 @@ const AdminActionBlog = () => {
       })
     }
   }
+  // const [previewImage, setPreviewImage] = useState('')
+  // const [previewOpen, setPreviewOpen] = useState(false)
+  // const [loading, setLoading] = useState(false)
+  // const [imageUrl, setImageUrl] = useState<string>()
+  const [fileList, setFileList] = useState<UploadFile[]>()
+
+  // const getBase64 = (img: FileType, callback: (url: string) => void) => {
+  //   const reader = new FileReader()
+  //   reader.addEventListener('load', () => callback(reader.result as string))
+  //   reader.readAsDataURL(img)
+  // }
+
+  const beforeUpload = (file: FileType) => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
+    if (!isJpgOrPng) {
+      message.error('You can only upload JPG/PNG file!')
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2
+    if (!isLt2M) {
+      message.error('Image must smaller than 2MB!')
+    }
+    return isJpgOrPng && isLt2M
+  }
+
+  const handleChange: UploadProps['onChange'] = ({
+    // file,
+    fileList: newFileList,
+    // event,
+  }) => {
+    // if (info.file.status === 'uploading') {
+    //   setLoading(true)
+    //   return
+    // }
+    // if (info.file.status === 'done') {
+    //   // Get this url from response in real world.
+    //   getBase64(info.file.originFileObj as FileType, (url) => {
+    //     setLoading(false)
+    //     setImageUrl(url)
+    //   })
+
+    // console.log('file', file)
+    // console.log('file list', newFileList)
+    // console.log('event', event)
+
+    setFileList(newFileList)
+    // }
+  }
+
+  const uploadButton = (
+    <button style={{ border: 0, background: 'none' }} type="button">
+      {false ? <LoadingOutlined /> : <PlusOutlined />}
+      <div style={{ marginTop: 8 }}>Upload</div>
+    </button>
+  )
+
+  // const customRequest = ({ file }: any) => {
+  //   setFileList([file])
+
+  //   console.log('file', file)
+  // }
 
   return (
     <div className="pt-[30px] px-10 bg-[#e8e6e6] pb-7">
@@ -123,8 +202,12 @@ const AdminActionBlog = () => {
               addonBg: 'green',
               cellRangeBorderColor: 'green',
               cellActiveWithRangeBg: 'green',
-              activeBorderColor: '4096ff',
+              activeBorderColor: '#4096ff',
               hoverBorderColor: '#4096ff',
+            },
+            Upload: {
+              colorPrimary: '#4096ff',
+              // colorPrimary: 'red',
             },
           },
         }}
@@ -148,6 +231,7 @@ const AdminActionBlog = () => {
               <Col span={24}>
                 <Form.Item
                   {...formItemLayout}
+                  initialValue={id && dataBlog?.title}
                   className="w-ful mb-3"
                   name="title"
                   label={
@@ -161,6 +245,78 @@ const AdminActionBlog = () => {
                     allowClear
                     className="w-[350px]"
                   />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Row className="mb-1 mx-10">
+              <Col span={24}>
+                <Form.Item
+                  {...formItemLayout}
+                  initialValue={id && dataBlog?.author}
+                  className="w-ful mb-3"
+                  name="name"
+                  label={
+                    <label style={{ fontSize: '15x', width: '110px' }}>
+                      Người đăng
+                    </label>
+                  }
+                >
+                  <Input
+                    disabled={type === 'view' ? true : false}
+                    allowClear
+                    className="w-[350px]"
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Row className="mb-1 mx-10">
+              <Col span={24}>
+                <Form.Item
+                  {...formItemLayout}
+                  className="w-ful mb-3"
+                  name="name"
+                  label={
+                    <label style={{ fontSize: '15x', width: '110px' }}>
+                      Ảnh bài viết
+                    </label>
+                  }
+                >
+                  <Upload
+                    name="avatar"
+                    action="http://localhost:3000/api/v1/blog/upload"
+                    listType="picture-card"
+                    maxCount={1}
+                    fileList={fileList}
+                    // showUploadList={false}
+                    // customRequest={customRequest}
+                    beforeUpload={beforeUpload}
+                    onChange={handleChange}
+                  >
+                    {false ? (
+                      <img
+                        // src={imageUrl}
+                        alt="avatar"
+                        style={{ width: '100%' }}
+                      />
+                    ) : (
+                      uploadButton
+                    )}
+                  </Upload>
+
+                  {/* {previewImage && (
+                    <Image
+                      wrapperStyle={{ display: 'none' }}
+                      preview={{
+                        visible: previewOpen,
+                        onVisibleChange: (visible) => setPreviewOpen(visible),
+                        afterOpenChange: (visible) =>
+                          !visible && setPreviewImage(''),
+                      }}
+                      src={previewImage}
+                    />
+                  )} */}
                 </Form.Item>
               </Col>
             </Row>
