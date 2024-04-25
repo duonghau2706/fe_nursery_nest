@@ -12,7 +12,7 @@ const FormSearchOrder = ({ onSearchHandler }: any) => {
     wrapperCol: { span: 18 },
   }
 
-  const { data: dataOrder } = useQuery({
+  useQuery({
     queryKey: [QUERY_KEY.GET_ALL_ORDER],
     queryFn: () =>
       orderApi.getAllOrder().then((res) => {
@@ -20,38 +20,15 @@ const FormSearchOrder = ({ onSearchHandler }: any) => {
       }),
   })
 
-  const optionsStatusMoney: any = []
+  const optionsStatusMoney = [
+    { label: 'Đã thanh toán', value: 1 },
+    { label: 'Chưa thanh toán', value: 0 },
+  ]
 
-  dataOrder?.forEach((order: any) => {
-    if (order?.status_money) {
-      const ele = optionsStatusMoney.filter(
-        (status_money: any) => status_money?.value === order?.status_money
-      )
-
-      if (ele?.length === 0)
-        optionsStatusMoney.push({
-          label:
-            order?.status_money === 0 ? 'Chưa thanh toán' : 'Đã thanh toán',
-          value: order?.status_money,
-        })
-    }
-  })
-
-  const optionsStatusShip: any = []
-
-  dataOrder?.forEach((order: any) => {
-    if (order?.status_ship) {
-      const ele = optionsStatusShip.filter(
-        (status_ship: any) => status_ship?.value === order?.status_ship
-      )
-
-      if (ele?.length === 0)
-        optionsStatusShip.push({
-          label: order?.status_ship === 0 ? 'Chưa vận chuyển' : 'Đã vận chuyển',
-          value: order?.status_ship,
-        })
-    }
-  })
+  const optionsStatusShip = [
+    { label: 'Đã vận chuyển', value: 1 },
+    { label: 'Chưa vận chuyển', value: 0 },
+  ]
 
   const searchBlogHandler = () => {
     const dataForm = form.getFieldsValue()
@@ -106,7 +83,7 @@ const FormSearchOrder = ({ onSearchHandler }: any) => {
               <Col span={12}>
                 <Form.Item
                   {...formItemLayout}
-                  name="order_code"
+                  name="orderCode"
                   label={
                     <label style={{ fontSize: '15x', width: '140px' }}>
                       Mã đơn hàng
@@ -120,7 +97,7 @@ const FormSearchOrder = ({ onSearchHandler }: any) => {
               <Col span={12}>
                 <Form.Item
                   {...formItemLayout}
-                  name="user_name"
+                  name="name"
                   label={
                     <label style={{ fontSize: '15x', width: '140px' }}>
                       Tên khách hàng
@@ -150,7 +127,7 @@ const FormSearchOrder = ({ onSearchHandler }: any) => {
               <Col span={12}>
                 <Form.Item
                   {...formItemLayout}
-                  name="discount_id"
+                  name="discountCode"
                   label={
                     <label style={{ fontSize: '15x', width: '140px' }}>
                       Mã giảm giá
@@ -166,7 +143,7 @@ const FormSearchOrder = ({ onSearchHandler }: any) => {
               <Col span={12}>
                 <Form.Item
                   {...formItemLayout}
-                  name="status_money"
+                  name="statusMoney"
                   label={
                     <label style={{ fontSize: '15x', width: '140px' }}>
                       Trạng thái thanh toán
@@ -189,7 +166,7 @@ const FormSearchOrder = ({ onSearchHandler }: any) => {
               <Col span={12}>
                 <Form.Item
                   {...formItemLayout}
-                  name="status_ship"
+                  name="statusShip"
                   label={
                     <label style={{ fontSize: '15x', width: '140px' }}>
                       Trạng thái vận chuyển

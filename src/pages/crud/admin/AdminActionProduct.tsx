@@ -1,18 +1,28 @@
-import { userApi } from '@/adapter'
+import { productApi } from '@/adapter'
+import categoryApi from '@/adapter/category'
 import useToken from '@/hook/token'
-import { URL } from '@/utils/constants'
+import { QUERY_KEY, URL } from '@/utils/constants'
+import { createTimeStampFromMoment } from '@/utils/helper'
+import { PlusOutlined } from '@ant-design/icons'
+import DecoupledEditor from '@ckeditor/ckeditor5-build-decoupled-document'
+import { CKEditor } from '@ckeditor/ckeditor5-react'
+
 import {
-  createTimeStampFromMoment,
-  create_UUID,
-  renderDateStringDay,
-  reverseStringDay,
-} from '@/utils/helper'
-import { Button, Col, ConfigProvider, DatePicker, Form, Input, Row } from 'antd'
-import dayjs from 'dayjs'
+  Button,
+  Col,
+  ConfigProvider,
+  Form,
+  Input,
+  Row,
+  Select,
+  Upload,
+  UploadFile,
+  UploadProps,
+} from 'antd'
 import moment from 'moment'
 import { useEffect, useState } from 'react'
-import { useMutation } from 'react-query'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useMutation, useQuery } from 'react-query'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
 const AdminActionProduct = () => {
@@ -21,70 +31,92 @@ const AdminActionProduct = () => {
   const [form] = Form.useForm()
   const navigate = useNavigate()
 
+  const [content, setContent] = useState<string>()
+
   const formItemLayout = {
     label: { span: 6 },
     wrapperCol: { span: 18 },
   }
 
-  const [curAdmin, setCurAdmin]: any = useState()
-  const [date, setDate]: any = useState(dayjs())
   const { type, id } = useParams()
+  const { pathname } = useLocation()
 
-  const mutationAdmin = useMutation({
-    mutationFn: (params: any) => userApi.getProfile(params),
-    onSuccess: (res) => {
-      form.setFieldValue('name', res?.data?.data?.[0]?.name)
-      form.setFieldValue('email', res?.data?.data?.[0]?.email)
-      form.setFieldValue('password', res?.data?.data?.[0]?.password)
-      form.setFieldValue('phone', res?.data?.data?.[0]?.phone)
-      form.setFieldValue('address', res?.data?.data?.[0]?.address)
-      form.setFieldValue('created_by', decode?.name)
+  const [fileList, setFileList] = useState<UploadFile[]>()
 
-      setCurAdmin(res?.data?.data?.[0])
-      setDate(
-        dayjs(
-          `${reverseStringDay(
-            renderDateStringDay(res?.data?.data?.[0]?.born, '/')
-          )}T00:00:00.000Z`.replaceAll('/', '-')
-        )
-      )
-    },
+  const { data: dataProduct = {} } = useQuery({
+    queryKey: [QUERY_KEY.GET_PRODUCT_BY_ID, pathname],
+    queryFn: () =>
+      productApi.getInfoProductById({ id }).then((res: any) => {
+        return res?.data?.data
+      }),
+    enabled: !!id, //Phải có id
+  })
+
+  const { data: dataCategory } = useQuery({
+    queryKey: [QUERY_KEY.GET_ALL_CATEGORIES],
+    queryFn: () =>
+      categoryApi.getAllCategories().then((res) => {
+        return res?.data?.data?.listCategory
+      }),
+  })
+
+  const optionsCategory = dataCategory?.map((category: any) => {
+    return {
+      label: category?.name,
+      value:
+        category?.name === 'Khăn lau mặt'
+          ? 0
+          : category?.name === 'Bông tẩy trang'
+          ? 1
+          : category?.name === 'Khăn khô đa năng'
+          ? 2
+          : category?.name === 'Khăn nén'
+          ? 3
+          : category?.name === 'Máy hút sữa'
+          ? 4
+          : 5,
+    }
   })
 
   useEffect(() => {
-    form.setFieldValue('created_by', decode?.name)
-
-    if (type === 'edit' || type === 'view') {
-      mutationAdmin.mutate({ userId: id })
+    if (id) {
+      form.setFieldValue('name', dataProduct?.name)
+      form.setFieldValue('category', {
+        label:
+          dataProduct?.category === 0
+            ? 'Khăn lau mặt'
+            : dataProduct?.category === 1
+            ? 'Bông tẩy trang'
+            : dataProduct?.category === 3
+            ? 'Khăn nén'
+            : dataProduct?.category === 4
+            ? 'Máy hút sữa'
+            : '',
+        value: dataProduct?.category,
+      })
+      form.setFieldValue('summarize', dataProduct?.summarize)
+      form.setFieldValue('originalPrice', dataProduct?.original_price)
+      setFileList([
+        {
+          uid: 'rc-upload-1713762409036-1',
+          name: 'name',
+          thumbUrl: dataProduct?.img,
+          percent: 100,
+        },
+      ])
     }
-  }, [])
+  }, [dataProduct])
 
-  useEffect(() => {
-    if (curAdmin?.born?.length > 0) {
-      setDate(
-        dayjs(
-          `${reverseStringDay(
-            renderDateStringDay(curAdmin?.born, '/')
-          )}T00:00:00.000Z`?.replaceAll('/', '-')
-        )
-      )
-    }
-  }, [curAdmin?.born])
-
-  const dateChangeHandler: any = (_: any) => {
-    setDate(dayjs(_.format('YYYY-MM-DD').concat('T00:00:00.000Z')))
-  }
-
-  const mutationCreateAdmin = useMutation({
-    mutationFn: (params: any) => userApi.createUser(params),
+  const mutationCreateProduct = useMutation({
+    mutationFn: (params: any) => productApi.createProduct(params),
     onSuccess: () => {
-      toast.success('Thêm mới admin thành công!', {
+      toast.success('Thêm mới sản phẩm thành công!', {
         autoClose: 2000,
         style: { marginTop: '50px' },
       })
 
       setTimeout(() => {
-        navigate(URL.MANAGE_ADMIN)
+        navigate(URL.ADMIN_PRODUCT_LIST)
       }, 2000)
     },
 
@@ -96,78 +128,85 @@ const AdminActionProduct = () => {
     },
   })
 
-  const mutationUpdateAdmin = useMutation({
-    mutationFn: (params: any) => userApi.updateUser(params),
+  const mutationUpdateProduct = useMutation({
+    mutationFn: (params: any) => productApi.updateProduct(params),
     onSuccess: () => {
-      toast.success('Cập nhật admin thành công!', {
+      toast.success('Cập nhật sản phẩm thành công!', {
         autoClose: 2000,
         style: { marginTop: '50px' },
       })
       setTimeout(() => {
-        navigate(URL.MANAGE_ADMIN)
+        navigate(URL.ADMIN_PRODUCT_LIST)
       }, 700)
     },
   })
 
   const onFinish = () => {
     const data = form.getFieldsValue()
-
     if (type === 'create') {
-      mutationCreateAdmin.mutate({
+      mutationCreateProduct.mutate({
         ...data,
-        id: create_UUID(),
-        born: date?.format('DD/MM/YYYY'),
-        gender: 0,
+        img: fileList?.[0]?.thumbUrl,
+        description: content,
         created_by: decode?.name,
         created_at: createTimeStampFromMoment(moment()),
         updated_at: createTimeStampFromMoment(moment()),
       })
     } else if (type === 'edit') {
-      mutationUpdateAdmin.mutate({
-        ...curAdmin,
+      mutationUpdateProduct.mutate({
+        id,
         ...data,
-        id: curAdmin?.id,
-        born: date?.format('DD/MM/YYYY'),
-        gender: 0,
+        img: fileList?.[0]?.thumbUrl,
+        description: content,
+        updated_by: decode?.name,
         updated_at: createTimeStampFromMoment(moment()),
-        update_by: decode?.name,
       })
     }
   }
 
+  const handleChange: UploadProps['onChange'] = ({ fileList }) => {
+    setFileList([...fileList])
+  }
+
+  const uploadButton = (
+    <button style={{ border: 0, background: 'none' }} type="button">
+      <PlusOutlined />
+      <div style={{ marginTop: 8 }}>Upload</div>
+    </button>
+  )
+
   return (
-    <div className="pt-[30px] px-10 bg-[#e8e6e6] pb-7">
+    <div className="pt-[30px] px-10 bg-[#e8e6e6] pb-7 h-full">
       <ConfigProvider
         theme={{
           token: {
-            controlOutline: 'rgba(5, 145, 255, 0.1)',
+            colorBgContainer: 'white',
+            colorPrimary: '#1677ff',
+            colorPrimaryHover: '#1677ff',
+            // controlOutline: '#4096ff',
+            controlOutlineWidth: 1,
             controlItemBgHover: 'rgba(0, 0, 0, 0.04)',
-            colorPrimary: 'white',
-            colorPrimaryHover: '#d9d9d9',
           },
           components: {
             Input: {
-              activeBorderColor: '#1677ff',
+              addonBg: 'red',
               hoverBorderColor: '#4096ff',
-              colorTextDisabled: 'gray',
+              colorTextDisabled: 'black',
             },
             Select: {
-              colorTextDisabled: 'gray',
-              controlOutline: '#4096ff',
-              controlOutlineWidth: 1,
               optionSelectedBg: '#cde9ff',
               optionActiveBg: 'rgba(0, 0, 0, 0.04)',
             },
             Button: {
-              // colorPrimary: 'white',
               colorPrimaryHover: 'white',
             },
             DatePicker: {
+              activeBorderColor: '#1677ff',
               colorTextDisabled: 'gray',
-              addonBg: 'green',
-              cellRangeBorderColor: 'green',
-              cellActiveWithRangeBg: 'green',
-              activeBorderColor: '4096ff',
+              addonBg: 'red',
+              cellRangeBorderColor: '#7cb3ff',
+              cellActiveWithRangeBg: '#e6f4ff',
+              cellHoverWithRangeBg: '#c8dfff',
               hoverBorderColor: '#4096ff',
             },
           },
@@ -183,7 +222,7 @@ const AdminActionProduct = () => {
 
         <div className="w-full pb-5 pt-9 flex justify-center bg-white border border-solid rounded border-gray-primary text-black-primary">
           <Form
-            initialValues={{ id: decode?.name }}
+            // initialValues={{ id: decode?.name }}
             form={form}
             onFinish={onFinish}
             className="w-full"
@@ -192,18 +231,19 @@ const AdminActionProduct = () => {
               <Col span={12}>
                 <Form.Item
                   {...formItemLayout}
+                  // initialValue={id && dataProduct?.sale}
                   className="w-ful mb-3"
                   name="name"
                   label={
-                    <label style={{ fontSize: '15x', width: '110px' }}>
-                      Tên admin
+                    <label style={{ fontSize: '15x', width: '90px' }}>
+                      Tên sản phẩm
                     </label>
                   }
                 >
                   <Input
                     disabled={type === 'view' ? true : false}
                     allowClear
-                    className="w-[350px]"
+                    className="w-[300px]"
                   />
                 </Form.Item>
               </Col>
@@ -211,141 +251,132 @@ const AdminActionProduct = () => {
               <Col span={12}>
                 <Form.Item
                   {...formItemLayout}
-                  className="w-ful mb-3"
-                  name="born"
+                  // initialValue={id && dataProduct?.sale}
+                  className="w-[405px] mb-3"
+                  name="category"
                   label={
-                    <label style={{ fontSize: '15x', width: '110px' }}>
-                      Ngày sinh
+                    <label style={{ fontSize: '15x', width: '90px' }}>
+                      Thể loại
                     </label>
                   }
                 >
-                  <ConfigProvider
-                    theme={{
-                      token: {
-                        controlOutline: 'rgba(5, 145, 255, 0.1)',
-                        colorPrimary: 'red',
-                      },
-                    }}
-                  >
-                    <DatePicker
-                      disabled={type === 'view'}
-                      onChange={dateChangeHandler}
-                      format={'DD/MM/YYYY'}
-                      className="w-1/3"
-                      placeholder={'Chọn ngày'}
-                      value={date}
-                    />
-                  </ConfigProvider>
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <Row className="mb-1 mx-10">
-              <Col span={12}>
-                <Form.Item
-                  {...formItemLayout}
-                  className="w-ful mb-3"
-                  name="email"
-                  label={
-                    <label style={{ fontSize: '15x', width: '110px' }}>
-                      Email
-                    </label>
-                  }
-                >
-                  <Input
-                    disabled={type === 'view' ? true : false}
+                  <Select
                     allowClear
-                    className="w-[350px]"
-                  />
-                </Form.Item>
-              </Col>
-
-              <Col span={12}>
-                <Form.Item
-                  {...formItemLayout}
-                  className="w-full mb-3"
-                  name="phone"
-                  label={
-                    <label style={{ fontSize: '15x', width: '110px' }}>
-                      Số điện thoại
-                    </label>
-                  }
-                >
-                  <Input
-                    disabled={type === 'view' ? true : false}
-                    allowClear
-                    className="w-[350px]"
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <Row className="mb-1 mx-10">
-              <Col span={12}>
-                <ConfigProvider
-                  theme={{
-                    token: {
-                      controlOutline: 'rgba(5, 145, 255, 0.1)',
-                      controlItemBgHover: 'rgba(0, 0, 0, 0.04)',
-                      colorPrimary: 'red',
-                    },
-                  }}
-                >
-                  <Form.Item
-                    {...formItemLayout}
-                    className="w-ful mb-3"
-                    name="password"
-                    label={
-                      <label style={{ fontSize: '15x', width: '110px' }}>
-                        Mật khẩu
-                      </label>
+                    showSearch
+                    options={optionsCategory}
+                    filterOption={(input: any, option: any) =>
+                      (option?.label ?? '')
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
                     }
-                  >
-                    <Input
-                      allowClear
-                      disabled={type === 'view'}
-                      className="w-[350px]"
-                    />
-                  </Form.Item>
-                </ConfigProvider>
-              </Col>
-
-              <Col span={12}>
-                <Form.Item
-                  {...formItemLayout}
-                  className="w-ful h-full mb-3"
-                  name="address"
-                  label={
-                    <label style={{ fontSize: '15x', width: '110px' }}>
-                      Địa chỉ
-                    </label>
-                  }
-                >
-                  <Input
-                    disabled={type === 'view' ? true : false}
-                    allowClear
-                    className="w-[350px]"
                   />
                 </Form.Item>
               </Col>
             </Row>
 
             <Row className="mb-1 mx-10">
-              <Col span={12}></Col>
+              <Col span={12}>
+                <Form.Item
+                  {...formItemLayout}
+                  // initialValue={id && dataProduct?.sale}
+                  className="w-ful mb-3"
+                  name="summarize"
+                  label={
+                    <label style={{ fontSize: '15x', width: '90px' }}>
+                      Tóm tắt
+                    </label>
+                  }
+                >
+                  <Input
+                    disabled={type === 'view' ? true : false}
+                    allowClear
+                    className="w-[300px]"
+                  />
+                </Form.Item>
+              </Col>
+
+              <Col span={12}>
+                <Form.Item
+                  {...formItemLayout}
+                  // initialValue={id && dataProduct?.sale}
+                  className="w-ful mb-3"
+                  name="originalPrice"
+                  label={
+                    <label style={{ fontSize: '15x', width: '90px' }}>
+                      Giá tiền
+                    </label>
+                  }
+                >
+                  <Input
+                    disabled={type === 'view' ? true : false}
+                    allowClear
+                    className="w-[300px]"
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Row className="mb-1 mx-10">
               <Col span={12}>
                 <Form.Item
                   {...formItemLayout}
                   className="w-ful mb-3"
-                  name="created_by"
+                  name="img"
                   label={
-                    <label style={{ fontSize: '15x', width: '110px' }}>
-                      Người {type === 'edit' ? 'chỉnh sửa' : 'thêm'}
+                    <label style={{ fontSize: '15x', width: '90px' }}>
+                      Ảnh sản phẩm
                     </label>
                   }
                 >
-                  <Input allowClear disabled className="w-[350px]" />
+                  <Upload
+                    name="avatar"
+                    listType="picture-card"
+                    maxCount={1}
+                    fileList={fileList}
+                    beforeUpload={() => false}
+                    onChange={handleChange}
+                    disabled={type === 'view'}
+                  >
+                    {uploadButton}
+                  </Upload>
                 </Form.Item>
               </Col>
+
+              <Col span={12}></Col>
+            </Row>
+
+            <Row className="mb-1 mx-10">
+              <Col span={24}>
+                <Form.Item
+                  {...formItemLayout}
+                  className="w-[950px] mb-3 relative left-[-45px]"
+                  name="description"
+                  label={
+                    <label style={{ fontSize: '15x', width: '50px' }}>
+                      Mô tả
+                    </label>
+                  }
+                >
+                  <CKEditor
+                    // config={config}
+                    onReady={(editor: any) => {
+                      editor.ui
+                        .getEditableElement()
+                        .parentElement.insertBefore(
+                          editor.ui.view.toolbar.element,
+                          editor.ui.getEditableElement()
+                        )
+                    }}
+                    onChange={(event, editor) => {
+                      const data = editor.getData()
+                      setContent(data)
+                    }}
+                    editor={DecoupledEditor}
+                    data={id && (dataProduct?.description || '')}
+                  />
+                </Form.Item>
+              </Col>
+              {/* <Col span={12} /> */}
             </Row>
 
             <div className="flex gap-2 justify-center mt-5">

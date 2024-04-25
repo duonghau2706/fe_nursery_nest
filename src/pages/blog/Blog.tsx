@@ -9,13 +9,13 @@ const Blog = () => {
     queryKey: [QUERY_KEY.GET_ALL_BLOG],
     queryFn: async () => {
       return await blogApi.getAllBlog().then((res: any) => {
-        return res?.data?.data
+        return res?.data?.data?.listBlog
       })
     },
   })
 
-  const lstMainPost = dataBlog?.slice(0, 2) // lấy từ 0 tới 1
-  const lstPost = dataBlog?.slice(2) // lấy từ 2 tới arr.length
+  const lstMainPost = dataBlog?.slice(0, 2) || [] // lấy từ 0 tới 1
+  const lstPost = dataBlog?.slice(2) || [] // lấy từ 2 tới arr.length
 
   return (
     <div className="mx-[75px] my-5 px-4 py-3 pb-7 text-black-main border-solid border-transparent rounded-[10px] bg-white text-[16px]">

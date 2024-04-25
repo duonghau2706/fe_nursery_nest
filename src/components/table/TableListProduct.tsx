@@ -8,7 +8,7 @@ import { renderDateStringYear } from '@/utils/helper'
 import { Button, ConfigProvider, Space, Table } from 'antd'
 import { Link } from 'react-router-dom'
 
-const TableListOrder = ({
+const TableListProduct = ({
   dataTable,
   loading,
   currentPage,
@@ -32,81 +32,51 @@ const TableListOrder = ({
     },
 
     {
-      title: 'Mã đơn hàng',
-      dataIndex: 'order_code',
+      title: 'Ảnh',
+      dataIndex: 'img',
       align: 'center',
-      width: '200px',
+      width: '80px',
+      render: (_: any, record: any) => {
+        return <img className="w-[60px] h-[60px]" src={record?.img} alt="img" />
+      },
     },
 
     {
-      title: 'Tên khách hàng',
+      title: 'Tên sản phẩm',
       dataIndex: 'name',
       align: 'center',
       width: '230px',
     },
 
     {
-      title: 'Số điện thoại',
-      dataIndex: 'phone',
+      title: 'Thể loại',
+      dataIndex: 'category',
       align: 'center',
       width: '130px',
+      render: (_: any, record: any) => {
+        return (
+          <div>
+            {record?.category === 0
+              ? 'Khăn lau mặt'
+              : record?.category === 1
+              ? 'Bông tẩy trang'
+              : record?.category === 3
+              ? 'Khăn nén'
+              : record?.category === 4
+              ? 'Máy hút sữa'
+              : ''}
+          </div>
+        )
+      },
     },
 
     {
-      title: 'Mã giảm giá',
-      dataIndex: 'discount_code',
+      title: 'Giá tiền',
+      dataIndex: 'original_price',
       align: 'center',
       width: '130px',
-    },
-
-    {
-      title: 'Địa chỉ',
-      dataIndex: 'address',
-      align: 'center',
-      width: '200px',
-    },
-
-    {
-      title: 'Trạng thái thanh toán',
-      dataIndex: 'status_money',
-      align: 'center',
-      width: '200px',
       render: (row: any, record: any) => (
-        <div>
-          {record?.status_money === 0 ? 'Chưa thanh toán' : 'Đã thanh toán'}
-        </div>
-      ),
-    },
-
-    {
-      title: 'Trạng thái vận chuyển',
-      dataIndex: 'status_ship',
-      align: 'center',
-      width: '200px',
-      render: (row: any, record: any) => (
-        <div>
-          {record?.status_ship === 0 ? 'Chưa vận chuyển' : 'Đã vận chuyển'}
-        </div>
-      ),
-    },
-
-    {
-      title: 'Tiền vận chuyển',
-      dataIndex: 'ship',
-      align: 'center',
-      width: '200px',
-      render: (row: any, record: any) => (
-        <div>{Number(record?.ship).toLocaleString()}</div>
-      ),
-    },
-
-    {
-      title: 'Tổng tiền thanh toán',
-      dataIndex: 'total_money',
-      align: 'center',
-      width: '200px',
-      render: (row: any, record: any) => (
-        <div>{Number(record?.total_money).toLocaleString()}</div>
+        <div>{Number(record?.original_price).toLocaleString()}</div>
       ),
     },
 
@@ -114,7 +84,7 @@ const TableListOrder = ({
       title: 'Ngày tạo',
       dataIndex: 'created_at',
       align: 'center',
-      width: '140px',
+      width: '120px',
       render: (row: any, record: any) => (
         <div>{renderDateStringYear(record?.created_at, '-')}</div>
       ),
@@ -124,7 +94,7 @@ const TableListOrder = ({
       title: 'Ngày cập nhật',
       dataIndex: 'updated_at',
       align: 'center',
-      width: '140px',
+      width: '120px',
       render: (row: any, record: any) => (
         <div>{renderDateStringYear(record?.updated_at, '-')}</div>
       ),
@@ -138,13 +108,13 @@ const TableListOrder = ({
       fixed: 'right',
       render: (_: any, record: any) => (
         <Space className="flex justify-center items-center">
-          <Link to={`${URL.ADMIN_ORDER}/view/${record.id}`}>
+          <Link to={`${URL.ADMIN_PRODUCT}/view/${record.id}`}>
             <Button
               className="flex items-center justify-center border-none"
               icon={<img src={IconView} width={30} height={17} />}
             ></Button>
           </Link>
-          <Link to={`${URL.ADMIN_ORDER}/edit/${record.id}`}>
+          <Link to={`${URL.ADMIN_PRODUCT}/edit/${record.id}`}>
             <Button
               className="flex items-center justify-center border-none"
               icon={<img src={IconEdit} width={22} height={20} />}
@@ -197,4 +167,4 @@ const TableListOrder = ({
   )
 }
 
-export default memo(TableListOrder)
+export default memo(TableListProduct)

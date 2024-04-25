@@ -1,9 +1,9 @@
 import { userApi } from '@/adapter'
+import orderApi from '@/adapter/order'
 import useToken from '@/hook/token'
 import { QUERY_KEY, URL } from '@/utils/constants'
-import { createDayjsFromDMY, createTimeStampFromMoment } from '@/utils/helper'
-import { Button, Col, ConfigProvider, DatePicker, Form, Input, Row } from 'antd'
-import dayjs from 'dayjs'
+import { createTimeStampFromMoment } from '@/utils/helper'
+import { Button, Col, ConfigProvider, Form, Input, Row } from 'antd'
 import moment from 'moment'
 import { useEffect } from 'react'
 import { useMutation, useQuery } from 'react-query'
@@ -24,10 +24,10 @@ const AdminActionOrder = () => {
   const { type, id } = useParams()
   const { pathname } = useLocation()
 
-  const { data: dataUser = {} } = useQuery({
-    queryKey: [QUERY_KEY.GET_USER_BY_ID, pathname],
+  const { data: dataOrder = {} } = useQuery({
+    queryKey: [QUERY_KEY.GET_ORDER_BY_ID, pathname],
     queryFn: () =>
-      userApi.getUserById({ userId: id }).then((res: any) => {
+      orderApi.getOrderById({ orderId: id }).then((res: any) => {
         return res?.data?.data
       }),
     enabled: !!id, //Phải có id
@@ -35,45 +35,21 @@ const AdminActionOrder = () => {
 
   useEffect(() => {
     if (id) {
-      form.setFieldValue('name', dataUser?.name)
-      form.setFieldValue('email', dataUser?.email)
-      form.setFieldValue('password', dataUser?.password)
-      form.setFieldValue('phone', dataUser?.phone)
-      form.setFieldValue('address', dataUser?.address)
-      form.setFieldValue('born', createDayjsFromDMY(dataUser?.born || ''))
+      form.setFieldValue('name', dataOrder?.name)
+      form.setFieldValue('phone', dataOrder?.phone)
+      form.setFieldValue('address', dataOrder?.address)
     }
-  }, [dataUser])
-
-  const mutationCreateUser = useMutation({
-    mutationFn: (params: any) => userApi.createUser(params),
-    onSuccess: () => {
-      toast.success('Thêm mới người dùng thành công!', {
-        autoClose: 2000,
-        style: { marginTop: '50px' },
-      })
-
-      setTimeout(() => {
-        navigate(URL.ADMIN_USER_LIST)
-      }, 2000)
-    },
-
-    onError: () => {
-      toast.error('Vui lòng nhập đủ thông tin!', {
-        autoClose: 2000,
-        style: { marginTop: '50px' },
-      })
-    },
-  })
+  }, [dataOrder])
 
   const mutationUpdateUser = useMutation({
     mutationFn: (params: any) => userApi.updateUser(params),
     onSuccess: () => {
-      toast.success('Cập nhật người dùng thành công!', {
+      toast.success('Cập nhật đơn hàng thành công!', {
         autoClose: 2000,
         style: { marginTop: '50px' },
       })
       setTimeout(() => {
-        navigate(URL.ADMIN_USER_LIST)
+        navigate(URL.ADMIN_ORDER_LIST)
       }, 700)
     },
   })
@@ -81,21 +57,12 @@ const AdminActionOrder = () => {
   const onFinish = () => {
     const data = form.getFieldsValue()
 
-    if (type === 'create') {
-      mutationCreateUser.mutate({
-        ...data,
-        born: dayjs(data?.born).format('DD/MM/YYYY'),
-        created_by: decode?.name,
-        created_at: createTimeStampFromMoment(moment()),
-        updated_at: createTimeStampFromMoment(moment()),
-      })
-    } else if (type === 'edit') {
+    if (type === 'edit') {
       mutationUpdateUser.mutate({
         id,
         ...data,
-        born: dayjs(data?.born).format('DD/MM/YYYY'),
-        updated_at: createTimeStampFromMoment(moment()),
         updated_by: decode?.name,
+        updated_at: createTimeStampFromMoment(moment()),
       })
     }
   }
@@ -139,10 +106,10 @@ const AdminActionOrder = () => {
       >
         <div className="mb-3 text-[30px] text-black-main font-semibold">
           {type === 'create'
-            ? 'Thêm người dùng mới'
+            ? 'Thêm đơn hàng mới'
             : type === 'edit'
-            ? 'Chỉnh sửa thông tin người dùng'
-            : 'Chi tiết thông tin người dùng'}
+            ? 'Chỉnh sửa thông tin đơn hàng'
+            : 'Chi tiết thông tin đơn hàng'}
         </div>
 
         <div className="w-full pb-5 pt-9 flex justify-center bg-white border border-solid rounded border-gray-primary text-black-primary">
@@ -156,12 +123,12 @@ const AdminActionOrder = () => {
               <Col span={12}>
                 <Form.Item
                   {...formItemLayout}
-                  // initialValue={id && dataUser?.sale}
+                  // initialValue={id && dataOrder?.sale}
                   className="w-ful mb-3"
                   name="name"
                   label={
-                    <label style={{ fontSize: '15x', width: '75px' }}>
-                      Tên
+                    <label style={{ fontSize: '15x', width: '100px' }}>
+                      Tên khách hàng
                     </label>
                   }
                 >
@@ -176,53 +143,11 @@ const AdminActionOrder = () => {
               <Col span={12}>
                 <Form.Item
                   {...formItemLayout}
-                  // initialValue={id && dataUser?.sale}
-                  className="w-ful mb-3"
-                  name="email"
-                  label={
-                    <label style={{ fontSize: '15x', width: '75px' }}>
-                      Email
-                    </label>
-                  }
-                >
-                  <Input
-                    disabled={type === 'view' ? true : false}
-                    allowClear
-                    className="w-[300px]"
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <Row className="mb-1 mx-10">
-              <Col span={12}>
-                <Form.Item
-                  {...formItemLayout}
-                  // initialValue={id && dataUser?.sale}
-                  className="w-ful mb-3"
-                  name="password"
-                  label={
-                    <label style={{ fontSize: '15x', width: '75px' }}>
-                      Mật khẩu
-                    </label>
-                  }
-                >
-                  <Input
-                    disabled={type === 'view' ? true : false}
-                    allowClear
-                    className="w-[300px]"
-                  />
-                </Form.Item>
-              </Col>
-
-              <Col span={12}>
-                <Form.Item
-                  {...formItemLayout}
-                  // initialValue={id && dataUser?.sale}
+                  // initialValue={id && dataOrder?.sale}
                   className="w-ful mb-3"
                   name="phone"
                   label={
-                    <label style={{ fontSize: '15x', width: '75px' }}>
+                    <label style={{ fontSize: '15x', width: '50px' }}>
                       SĐT
                     </label>
                   }
@@ -240,32 +165,11 @@ const AdminActionOrder = () => {
               <Col span={12}>
                 <Form.Item
                   {...formItemLayout}
-                  // initialValue={id && dataUser?.sale}
-                  className="w-ful mb-3"
-                  name="born"
-                  label={
-                    <label style={{ fontSize: '15x', width: '75px' }}>
-                      Ngày sinh
-                    </label>
-                  }
-                >
-                  <DatePicker
-                    className="w-[300px]"
-                    disabled={type === 'view'}
-                    format={'DD/MM/YYYY'}
-                    placeholder={'Chọn ngày'}
-                  />
-                </Form.Item>
-              </Col>
-
-              <Col span={12}>
-                <Form.Item
-                  {...formItemLayout}
-                  // initialValue={id && dataUser?.sale}
+                  // initialValue={id && dataOrder?.sale}
                   className="w-ful mb-3"
                   name="address"
                   label={
-                    <label style={{ fontSize: '15x', width: '75px' }}>
+                    <label style={{ fontSize: '15x', width: '100px' }}>
                       Địa chỉ
                     </label>
                   }
@@ -276,7 +180,8 @@ const AdminActionOrder = () => {
                     className="w-[300px]"
                   />
                 </Form.Item>
-              </Col>
+              </Col>{' '}
+              <Col span={12}></Col>
             </Row>
 
             <div className="flex gap-2 justify-center mt-5">

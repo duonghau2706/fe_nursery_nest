@@ -58,6 +58,7 @@ const URL = {
 }
 
 const QUERY_KEY = {
+  GET_ORDER_BY_ID: 'GET_ORDER_BY_ID',
   GET_ALL_ORDER: 'GET_ALL_ORDER',
   GET_COMMENT_BY_ID: 'GET_COMMENT_BY_ID',
   GET_ALL_COMMENT: 'GET_ALL_COMMENT',
@@ -101,6 +102,12 @@ const QUERY_KEY = {
 }
 
 const endpoint = {
+  get_all_prd: '/api/v1/product/get-all-prd',
+  create_product: '/api/v1/product/create-product',
+  update_product: '/api/v1/product/update-product',
+  delete_product: '/api/v1/product/delete-product',
+
+  get_order_by_id: '/api/v1/order/get-order-by-id',
   get_all_order: '/api/v1/order/get-all-order',
   get_orders_by_user_id: '/api/v1/order/get-by-user-id',
   create_order: '/api/v1/order/create-order',

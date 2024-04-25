@@ -1,20 +1,15 @@
 import useToken from '@/hook/token'
 import { URL } from '@/utils/constants'
-import {
-  CommentOutlined,
-  FormOutlined,
-  HomeOutlined,
-  UserOutlined,
-} from '@ant-design/icons'
+import { FormOutlined, HomeOutlined, UserOutlined } from '@ant-design/icons'
+import AssignmentIcon from '@mui/icons-material/Assignment'
 import CategoryIcon from '@mui/icons-material/Category'
 import DiscountIcon from '@mui/icons-material/Discount'
+import InventoryIcon from '@mui/icons-material/Inventory'
 import type { MenuProps } from 'antd'
 import { Menu } from 'antd'
 import SubMenu from 'antd/es/menu/SubMenu'
 import React, { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
-import InventoryIcon from '@mui/icons-material/Inventory'
-import AssignmentIcon from '@mui/icons-material/Assignment'
 
 type MenuItem = Required<MenuProps>['items'][number]
 
@@ -135,11 +130,11 @@ const SideBar = () => {
               URL.ADMIN_CATEGORY_LIST,
               <CategoryIcon />
             ),
-            getItem(
-              'Quản lý bình luận',
-              URL.ADMIN_COMMENT_LIST,
-              <CommentOutlined />
-            ),
+            // getItem(
+            //   'Quản lý bình luận',
+            //   URL.ADMIN_COMMENT_LIST,
+            //   <CommentOutlined />
+            // ),
             getItem('Quản lý bài viết', URL.ADMIN_BLOG_LIST, <FormOutlined />),
             getItem(
               'Quản lý mã giảm giá',

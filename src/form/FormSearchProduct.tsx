@@ -1,55 +1,60 @@
 import { productApi } from '@/adapter'
-import categoryApi from '@/adapter/category'
-import { QUERY_KEY, URL } from '@/utils/constants'
-import { Button, Col, ConfigProvider, Form, Row, Select } from 'antd'
+import { QUERY_KEY } from '@/utils/constants'
+import { cleanObj } from '@/utils/helper'
+import { Button, Col, ConfigProvider, Form, Input, Row, Select } from 'antd'
 import { useQuery } from 'react-query'
-import { useNavigate } from 'react-router-dom'
 
-const FormSearchProduct = ({ onSearchAdmin }: any) => {
+const FormSearchProduct = ({ onSearchHandler }: any) => {
   const [form] = Form.useForm()
-  const navigate = useNavigate()
 
   const formItemLayout = {
     label: { span: 6 },
     wrapperCol: { span: 18 },
   }
 
-  const { data: dataProduct = [] } = useQuery({
+  const { data: dataProduct } = useQuery({
     queryKey: [QUERY_KEY.GET_ALL_PRODUCT],
-    queryFn: async () => {
-      return await productApi.getAllProduct().then((res) => {
-        return res?.data?.data?.all
-      })
-    },
+    queryFn: () =>
+      productApi.getAll().then((res) => {
+        return res?.data?.data?.listProduct
+      }),
   })
 
-  const { data: dataCategories = [] } = useQuery({
-    queryKey: [QUERY_KEY.GET_ALL_CATEGORIES],
-    queryFn: async () => {
-      return await categoryApi.getAllCategories().then((res) => {
-        return res?.data?.data
-      })
-    },
-  })
+  const optionsCategory: any = []
 
-  const optionsName = dataProduct?.map((product: any) => {
-    return {
-      label: product?.name,
-      value: product?.id,
+  dataProduct?.forEach((product: any) => {
+    if (product?.category) {
+      const ele = optionsCategory.filter(
+        (category: any) => category?.value === product?.category
+      )
+
+      if (ele?.length === 0)
+        optionsCategory.push({
+          label:
+            product?.category === 0
+              ? 'Khăn lau mặt'
+              : product?.category === 1
+              ? 'Bông tẩy trang'
+              : product?.category === 2
+              ? 'Khăn khô đa năng'
+              : product?.category === 3
+              ? 'Khăn nén'
+              : product?.category === 4
+              ? 'Máy hút sữa'
+              : '',
+          value: product?.category,
+        })
     }
   })
 
-  const optionsCategories = dataCategories?.map((category: any) => {
-    return {
-      label: category?.name,
-      value: category?.id,
-    }
-  })
+  const searchBlogHandler = () => {
+    const dataForm = form.getFieldsValue()
+    const data = cleanObj({
+      ...dataForm,
+    })
 
-  const searchAdminHandler = () => {
-    onSearchAdmin(form.getFieldsValue())
+    onSearchHandler(data)
     form.resetFields()
-    navigate(URL.MANAGE_ADMIN)
   }
 
   return (
@@ -58,9 +63,9 @@ const FormSearchProduct = ({ onSearchAdmin }: any) => {
         theme={{
           token: {
             colorBgContainer: 'white',
-            colorPrimary: 'white',
-            colorPrimaryHover: '#d9d9d9',
-            controlOutline: '#4096ff',
+            colorPrimary: '#1677ff',
+            colorPrimaryHover: '#1677ff',
+            // controlOutline: '#4096ff',
             controlOutlineWidth: 1,
             controlItemBgHover: 'rgba(0, 0, 0, 0.04)',
           },
@@ -76,6 +81,15 @@ const FormSearchProduct = ({ onSearchAdmin }: any) => {
             },
             Button: {
               colorPrimaryHover: 'white',
+            },
+            DatePicker: {
+              activeBorderColor: '#1677ff',
+              colorTextDisabled: 'gray',
+              addonBg: 'red',
+              cellRangeBorderColor: '#7cb3ff',
+              cellActiveWithRangeBg: '#e6f4ff',
+              cellHoverWithRangeBg: '#c8dfff',
+              hoverBorderColor: '#4096ff',
             },
           },
         }}
@@ -93,16 +107,7 @@ const FormSearchProduct = ({ onSearchAdmin }: any) => {
                     </label>
                   }
                 >
-                  <Select
-                    allowClear
-                    showSearch
-                    options={optionsName}
-                    filterOption={(input: any, option: any) =>
-                      (option?.label ?? '')
-                        .toLowerCase()
-                        .includes(input.toLowerCase())
-                    }
-                  ></Select>
+                  <Input allowClear />
                 </Form.Item>
               </Col>
 
@@ -111,7 +116,7 @@ const FormSearchProduct = ({ onSearchAdmin }: any) => {
                   {...formItemLayout}
                   name="category"
                   label={
-                    <label style={{ fontSize: '15x', width: '110px' }}>
+                    <label style={{ fontSize: '15x', width: '80px' }}>
                       Thể loại
                     </label>
                   }
@@ -119,13 +124,13 @@ const FormSearchProduct = ({ onSearchAdmin }: any) => {
                   <Select
                     allowClear
                     showSearch
-                    options={optionsCategories}
+                    options={optionsCategory}
                     filterOption={(input: any, option: any) =>
                       (option?.label ?? '')
                         .toLowerCase()
                         .includes(input.toLowerCase())
                     }
-                  ></Select>
+                  />
                 </Form.Item>
               </Col>
             </Row>
@@ -134,8 +139,9 @@ const FormSearchProduct = ({ onSearchAdmin }: any) => {
 
         <div className="flex justify-center pt-1 pb-5">
           <Button
+            htmlType="submit"
             className="font-semibold w-[120px] flex items-center justify-center rounded-[5px] py-3 h-[37px] bg-green-ok text-white hover:bg-green-okHover"
-            onClick={searchAdminHandler}
+            onClick={searchBlogHandler}
           >
             Tìm kiếm
           </Button>

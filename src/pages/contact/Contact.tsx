@@ -9,14 +9,14 @@ const Contact = () => {
       <div className="flex gap-5">
         <div className="flex flex-col gap-[6px]">
           <div>
-            <strong>Trụ sở chính:</strong> K34 Nguyễn Xí, Phường Đúc, Thành Phố
-            Huế, Thừa Thiên Huế
+            <strong>Trụ sở chính: </strong>Số 205/42 Phố Thịnh Liệt, Quận Hoàng
+            Mai, Thành phố Hà Nội, Việt Nam
           </div>
           <div>
-            <strong>Email:</strong> dautramcungdinh@gmail.com
+            <strong>Email:</strong> kd@likado.vn
           </div>
           <div>
-            <strong>Hotline: </strong> 0918 806 277
+            <strong>Hotline: </strong> 0984 019 869
           </div>
 
           <ConfigProvider

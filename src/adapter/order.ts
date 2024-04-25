@@ -4,6 +4,9 @@ import { endpoint } from '@/utils/constants'
 const getAllOrder = async (params?: any) =>
   await sendGet(`${endpoint.get_all_order}`, params).then((res) => res.data)
 
+const getOrderById = async (params?: any) =>
+  await sendGet(`${endpoint.get_order_by_id}`, params).then((res) => res.data)
+
 const getOrdersByUserId = async (params?: any) =>
   await sendGet(`${endpoint.get_orders_by_user_id}`, params).then(
     (res) => res.data
@@ -19,6 +22,7 @@ const deleteOrder = async (params?: any) =>
 
 const orderApi = {
   getAllOrder,
+  getOrderById,
   getOrdersByUserId,
   create,
   updateOrder,
