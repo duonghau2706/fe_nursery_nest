@@ -1,10 +1,8 @@
-import blogApi from '@/adapter/blog'
+import commentApi from '@/adapter/comment'
 import useToken from '@/hook/token'
 import { QUERY_KEY, URL } from '@/utils/constants'
-import { createTimeStampFromMoment } from '@/utils/helper'
+import { createDayjsFromDMY, createTimeStampFromMoment } from '@/utils/helper'
 import { PlusOutlined } from '@ant-design/icons'
-import DecoupledEditor from '@ckeditor/ckeditor5-build-decoupled-document'
-import { CKEditor } from '@ckeditor/ckeditor5-react'
 import {
   Button,
   Col,
@@ -16,13 +14,14 @@ import {
   UploadFile,
   UploadProps,
 } from 'antd'
+import TextArea from 'antd/es/input/TextArea'
 import moment from 'moment'
 import { useEffect, useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
-const AdminActionBlog = () => {
+const AdminActionComment = () => {
   const { verifyToken } = useToken()
   const { decode } = verifyToken()
   const [form] = Form.useForm()
@@ -36,13 +35,21 @@ const AdminActionBlog = () => {
   const { type, id } = useParams()
   const { pathname } = useLocation()
 
-  const [content, setContent] = useState<string>()
   const [fileList, setFileList] = useState<UploadFile[]>()
 
-  const { data: dataBlog = {} } = useQuery({
-    queryKey: [QUERY_KEY.GET_BLOG_BY_ID, pathname],
+  // const { data: dataAllComment = {} } =
+  useQuery({
+    queryKey: [QUERY_KEY.GET_ALL_COMMENT, pathname],
     queryFn: () =>
-      blogApi.getById({ blogId: id }).then((res: any) => {
+      commentApi.getAllComment().then((res: any) => {
+        return res?.data?.data
+      }),
+  })
+
+  const { data: dataComment = {} } = useQuery({
+    queryKey: [QUERY_KEY.GET_COMMENT_BY_ID, pathname],
+    queryFn: () =>
+      commentApi.getCommentById({ commentId: id }).then((res: any) => {
         return res?.data?.data
       }),
     enabled: !!id, //Phải có id
@@ -50,30 +57,38 @@ const AdminActionBlog = () => {
 
   useEffect(() => {
     if (id) {
-      form.setFieldValue('author', dataBlog?.author),
-        form.setFieldValue('title', dataBlog?.title)
-
       setFileList([
         {
           uid: 'rc-upload-1713762409036-1',
           name: 'name',
-          thumbUrl: dataBlog?.img,
+          thumbUrl: dataComment?.img,
           percent: 100,
         },
       ])
     }
-  }, [dataBlog])
+  }, [dataComment])
 
-  const mutationCreateBlog = useMutation({
-    mutationFn: (params: any) => blogApi.create(params),
+  useEffect(() => {
+    if (id) {
+      form.setFieldValue('name', dataComment?.name)
+      form.setFieldValue('email', dataComment?.email)
+      form.setFieldValue('password', dataComment?.password)
+      form.setFieldValue('phone', dataComment?.phone)
+      form.setFieldValue('address', dataComment?.address)
+      form.setFieldValue('born', createDayjsFromDMY(dataComment?.born || ''))
+    }
+  }, [dataComment])
+
+  const mutationCreateUser = useMutation({
+    mutationFn: (params: any) => commentApi.createComment(params),
     onSuccess: () => {
-      toast.success('Thêm mới bài viết thành công!', {
+      toast.success('Thêm mới bình luận thành công!', {
         autoClose: 2000,
         style: { marginTop: '50px' },
       })
 
       setTimeout(() => {
-        navigate(URL.ADMIN_BLOG_LIST)
+        navigate(URL.ADMIN_COMMENT_LIST)
       }, 2000)
     },
 
@@ -85,15 +100,15 @@ const AdminActionBlog = () => {
     },
   })
 
-  const mutationUpdateBlog = useMutation({
-    mutationFn: (params: any) => blogApi.updateBlog(params),
+  const mutationUpdateComment = useMutation({
+    mutationFn: (params: any) => commentApi.updateComment(params),
     onSuccess: () => {
-      toast.success('Cập nhật bài viết thành công!', {
+      toast.success('Cập nhật bình luận thành công!', {
         autoClose: 2000,
         style: { marginTop: '50px' },
       })
       setTimeout(() => {
-        navigate(URL.ADMIN_BLOG_LIST)
+        navigate(URL.ADMIN_COMMENT_LIST)
       }, 700)
     },
   })
@@ -102,50 +117,26 @@ const AdminActionBlog = () => {
     const data = form.getFieldsValue()
 
     if (type === 'create') {
-      mutationCreateBlog.mutate({
+      mutationCreateUser.mutate({
         ...data,
-        // id: create_UUID(),
-        img: fileList?.[0]?.thumbUrl,
-        title: data?.title,
-        author: data?.author,
-        content,
         created_by: decode?.name,
+        // img,
         created_at: createTimeStampFromMoment(moment()),
         updated_at: createTimeStampFromMoment(moment()),
       })
     } else if (type === 'edit') {
-      mutationUpdateBlog.mutate({
+      mutationUpdateComment.mutate({
         ...data,
         id,
-        img: fileList?.[0]?.thumbUrl,
-        title: data?.title,
-        author: data?.author,
-        content,
+        // img,
         updated_at: createTimeStampFromMoment(moment()),
-        update_by: decode?.name,
+        updated_by: decode?.name,
       })
     }
   }
 
-  const handleChange: UploadProps['onChange'] = ({
-    file,
-    fileList: newFileList,
-  }) => {
-    // if (info.file.status === 'uploading') {
-    //   setLoading(true)
-    //   return
-    // }
-    if (file.status === 'done') {
-      // Get this url from response in real world.
-      // getBase64(file.originFileObj as FileType, (url) => {
-      //   // setLoading(false)
-      //   console.log('url', url)
-      //   setImageUrl(url)
-      // })
-    }
-
-    setFileList([...newFileList])
-    // }
+  const handleChange: UploadProps['onChange'] = ({ fileList }) => {
+    setFileList([...fileList])
   }
 
   const uploadButton = (
@@ -155,61 +146,81 @@ const AdminActionBlog = () => {
     </button>
   )
 
-  // const customRequest = ({ file, fileList }: any) => {
-  //   // setFileList([file])
-  //   // setFileList([...fileList])
-  //   mutationUploadBlog.mutate({ file: { ...file } })
-  //   console.log('file', file)
-  // }
+  // const optionsProductName: any = []
+
+  //   dataAllComment?.forEach((comment: any) => {
+  //     if (comment?.product_name) {
+  //       const ele = optionsProductName.filter(
+  //         (product_name: any) => product_name?.label === comment?.product_name
+  //       )
+
+  //       if (ele?.length === 0)
+  //         optionsProductName.push({
+  //           label: comment?.product_name,
+  //           value: comment?.product_name,
+  //         })
+  //     }
+  //   })
+
+  // const optionsUserName: any = []
+
+  // dataAllComment?.forEach((comment: any) => {
+  //   if (comment?.user_name) {
+  //     const ele = optionsUserName.filter(
+  //       (user_name: any) => user_name?.label === comment?.user_name
+  //     )
+
+  //     if (ele?.length === 0)
+  //       optionsUserName.push({
+  //         label: comment?.user_name,
+  //         value: comment?.user_name,
+  //       })
+  //   }
+  // })
 
   return (
-    <div className="pt-[30px] px-10 bg-[#e8e6e6] pb-7">
+    <div className="pt-[30px] px-10 bg-[#e8e6e6] pb-7 h-full">
       <ConfigProvider
         theme={{
           token: {
-            controlOutline: 'rgba(5, 145, 255, 0.1)',
+            colorBgContainer: 'white',
+            colorPrimary: '#1677ff',
+            colorPrimaryHover: '#1677ff',
+            // controlOutline: '#4096ff',
+            controlOutlineWidth: 1,
             controlItemBgHover: 'rgba(0, 0, 0, 0.04)',
-            colorPrimary: 'white',
-            colorPrimaryHover: '#d9d9d9',
           },
           components: {
             Input: {
-              activeBorderColor: '#1677ff',
+              addonBg: 'red',
               hoverBorderColor: '#4096ff',
-              colorTextDisabled: 'gray',
+              colorTextDisabled: 'black',
             },
             Select: {
-              colorTextDisabled: 'gray',
-              controlOutline: '#4096ff',
-              controlOutlineWidth: 1,
               optionSelectedBg: '#cde9ff',
               optionActiveBg: 'rgba(0, 0, 0, 0.04)',
             },
             Button: {
-              // colorPrimary: 'white',
               colorPrimaryHover: 'white',
             },
             DatePicker: {
+              activeBorderColor: '#1677ff',
               colorTextDisabled: 'gray',
-              addonBg: 'green',
-              cellRangeBorderColor: 'green',
-              cellActiveWithRangeBg: 'green',
-              activeBorderColor: '#4096ff',
+              addonBg: 'red',
+              cellRangeBorderColor: '#7cb3ff',
+              cellActiveWithRangeBg: '#e6f4ff',
+              cellHoverWithRangeBg: '#c8dfff',
               hoverBorderColor: '#4096ff',
-            },
-            Upload: {
-              colorPrimary: '#4096ff',
-              // colorPrimary: 'red',
             },
           },
         }}
       >
         <div className="mb-3 text-[30px] text-black-main font-semibold">
           {type === 'create'
-            ? 'Thêm bài viết mới'
+            ? 'Thêm bình luận mới'
             : type === 'edit'
-            ? 'Chỉnh sửa thông tin bài viết'
-            : 'Chi tiết thông tin bài viết'}
+            ? 'Chỉnh sửa thông tin bình luận'
+            : 'Chi tiết thông tin bình luận'}
         </div>
 
         <div className="w-full pb-5 pt-9 flex justify-center bg-white border border-solid rounded border-gray-primary text-black-primary">
@@ -219,65 +230,77 @@ const AdminActionBlog = () => {
             onFinish={onFinish}
             className="w-full"
           >
-            <Row className="mb-1 mx-10">
-              <Col span={24}>
+            <Row className="mb-1 mx-[100px]">
+              <Col span={12}>
                 <Form.Item
                   {...formItemLayout}
-                  // initialValue={id && dataBlog?.title}
+                  // initialValue={id && dataComment?.sale}
                   className="w-ful mb-3"
-                  name="title"
+                  name="name"
                   label={
-                    <label style={{ fontSize: '15x', width: '110px' }}>
-                      Tiêu đề bài viết
+                    <label style={{ fontSize: '15x', width: '130px' }}>
+                      Tên sản phẩm
+                    </label>
+                  }
+                >
+                  {/* <Select
+                    allowClear
+                    showSearch
+                    options={optionsProductName}
+                    filterOption={(input: any, option: any) =>
+                      (option?.label ?? '')
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                  /> */}
+                  <Input
+                    disabled={type === 'view' ? true : false}
+                    allowClear
+                    className="w-[300px]"
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={12}></Col>
+            </Row>
+
+            <Row className="mb-1 mx-[100px]">
+              <Col span={12}>
+                <Form.Item
+                  {...formItemLayout}
+                  // initialValue={id && dataComment?.sale}
+                  className="w-full mb-3"
+                  name="email"
+                  label={
+                    <label style={{ fontSize: '15x', width: '130px' }}>
+                      Tên người bình luận
                     </label>
                   }
                 >
                   <Input
                     disabled={type === 'view' ? true : false}
                     allowClear
-                    className="w-[350px]"
+                    className="w-[300px]"
                   />
                 </Form.Item>
               </Col>
+              <Col span={12}></Col>
             </Row>
 
-            <Row className="mb-1 mx-10">
-              <Col span={24}>
+            <Row className="mb-1 mx-[100px]">
+              <Col span={12}>
                 <Form.Item
                   {...formItemLayout}
-                  // initialValue={id && dataBlog?.author}
-                  className="w-ful mb-3"
-                  name="author"
+                  // initialValue={id && dataComment?.sale}
+                  className="w-full mb-3"
+                  name="password"
                   label={
-                    <label style={{ fontSize: '15x', width: '110px' }}>
-                      Người đăng
-                    </label>
-                  }
-                >
-                  <Input
-                    disabled={type === 'view' ? true : false}
-                    allowClear
-                    className="w-[350px]"
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <Row className="mb-1 mx-10">
-              <Col span={24}>
-                <Form.Item
-                  {...formItemLayout}
-                  className="w-ful mb-3"
-                  name="blog"
-                  label={
-                    <label style={{ fontSize: '15x', width: '110px' }}>
-                      Ảnh bài viết
+                    <label style={{ fontSize: '15x', width: '130px' }}>
+                      Ảnh
                     </label>
                   }
                 >
                   <Upload
                     name="avatar"
-                    // action="http://localhost:3000/api/v1/blog/upload"
                     listType="picture-card"
                     maxCount={1}
                     fileList={fileList}
@@ -287,54 +310,36 @@ const AdminActionBlog = () => {
                   >
                     {uploadButton}
                   </Upload>
-
-                  {/* {previewImage && (
-                    <Image
-                      wrapperStyle={{ display: 'none' }}
-                      preview={{
-                        visible: previewOpen,
-                        onVisibleChange: (visible) => setPreviewOpen(visible),
-                        afterOpenChange: (visible) =>
-                          !visible && setPreviewImage(''),
-                      }}
-                      src={previewImage}
-                    />
-                  )} */}
                 </Form.Item>
               </Col>
+
+              <Col span={12}></Col>
             </Row>
 
-            <Row className="mb-1 mx-10">
-              <Col span={24}>
+            <Row className="mb-1 mx-[100px]">
+              <Col span={12}>
                 <Form.Item
                   {...formItemLayout}
+                  // initialValue={id && dataComment?.sale}
                   className="w-ful mb-3"
-                  name="content"
+                  name="born"
                   label={
-                    <label style={{ fontSize: '15x', width: '110px' }}>
-                      Nội dung bài viết
+                    <label style={{ fontSize: '15x', width: '130px' }}>
+                      Bình luận
                     </label>
                   }
                 >
-                  <CKEditor
-                    // config={config}
-                    onReady={(editor: any) => {
-                      editor.ui
-                        .getEditableElement()
-                        .parentElement.insertBefore(
-                          editor.ui.view.toolbar.element,
-                          editor.ui.getEditableElement()
-                        )
-                    }}
-                    onChange={(event, editor) => {
-                      const data = editor.getData()
-                      setContent(data)
-                    }}
-                    editor={DecoupledEditor}
-                    data={id && dataBlog?.content}
+                  <TextArea
+                    allowClear
+                    className="w-[200%]"
+                    rows={5}
+                    autoSize={{ minRows: 5, maxRows: 5 }}
+                    disabled={type === 'view'}
                   />
                 </Form.Item>
               </Col>
+
+              <Col span={12}></Col>
             </Row>
 
             <div className="flex gap-2 justify-center mt-5">
@@ -361,4 +366,4 @@ const AdminActionBlog = () => {
   )
 }
 
-export default AdminActionBlog
+export default AdminActionComment

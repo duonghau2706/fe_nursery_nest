@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import moment from 'moment'
 
 interface ICleanObject {
@@ -106,8 +107,21 @@ const renderInputBank = (index: any) => {
   }
 }
 
+const createDayjsFromDMY = (text: any) => {
+  //30/05/2022 -> 2022-05-30T00:00:00.000Z
+  return dayjs(`${reverseStringDay(text)}T00:00:00.000Z`.replaceAll('/', '-'))
+}
+
 const createTimeStampFromMoment = (text: any) => {
   return text.format('YYYY-MM-DD HH:mm:ss.SSS')
+}
+
+const createStartDateTimeStampFromMoment = (text: any) => {
+  return text.startOf('day').format('YYYY-MM-DD HH:mm:ss.SSS')
+}
+
+const createEndDateTimeStampFromMoment = (text: any) => {
+  return text.endOf('day').format('YYYY-MM-DD HH:mm:ss.SSS')
 }
 
 const createStartDateDbFromOnlyYear = (year: number) => {
@@ -378,6 +392,9 @@ const renderFullrAdress = (
 }
 
 export {
+  createDayjsFromDMY,
+  createStartDateTimeStampFromMoment,
+  createEndDateTimeStampFromMoment,
   renderFullrAdress,
   create_ORDER_CODE,
   create_CODE,

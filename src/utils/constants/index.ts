@@ -1,4 +1,14 @@
 const URL = {
+  ADMIN_ORDER_LIST: '/admin/order/list',
+  ADMIN_BLOG_LIST: '/admin/blog/list',
+  ADMIN_CATEGORY_LIST: '/admin/category/list',
+  ADMIN_USER_LIST: '/admin/user/list',
+  ADMIN_PRODUCT_LIST: '/admin/product/list',
+  ADMIN_HOME_LIST: '/admin/home/list',
+  ADMIN_DISCOUNT_LIST: '/admin/discount/list',
+  ADMIN_COMMENT_LIST: '/admin/comment/list',
+
+  ADMIN_ORDER: '/admin/order',
   ADMIN_BLOG: '/admin/blog',
   ADMIN_CATEGORY: '/admin/category',
   ADMIN_USER: '/admin/user',
@@ -48,6 +58,15 @@ const URL = {
 }
 
 const QUERY_KEY = {
+  GET_ALL_ORDER: 'GET_ALL_ORDER',
+  GET_COMMENT_BY_ID: 'GET_COMMENT_BY_ID',
+  GET_ALL_COMMENT: 'GET_ALL_COMMENT',
+  GET_CATEGORY_BY_ID: 'GET_CATEGORY_BY_ID',
+  GET_USER_BY_ID: 'GET_USER_BY_ID',
+  GET_DISCOUNT_BY_ID: 'GET_DISCOUNT_BY_ID',
+  GET_INFO: 'GET_INFO',
+
+  GET_ALL_DISCOUNT: 'GET_ALL_DISCOUNT',
   GET_BLOG_BY_ID: 'GET_BLOG_BY_ID',
   GET_ALL_BLOG: 'GET_ALL_BLOG',
   GET_ALL_CATEGORIES: 'GET_ALL_CATEGORIES',
@@ -82,16 +101,44 @@ const QUERY_KEY = {
 }
 
 const endpoint = {
+  get_all_order: '/api/v1/order/get-all-order',
+  get_orders_by_user_id: '/api/v1/order/get-by-user-id',
+  create_order: '/api/v1/order/create-order',
+  update_order: '/api/v1/order/update-order',
+  delete_order: '/api/v1/order/delete-order',
+
+  get_all_comment: '/api/v1/comment/get-all-comment',
+  get_comment_by_id: '/api/v1/comment/get-comment-by-id',
+  create_comment: '/api/v1/comment/create-comment',
+  update_comment: '/api/v1/comment/update-comment',
+  delete_comment: '/api/v1/comment/delete-comment',
+
+  get_all_categories: '/api/v1/category/get-all-categories',
+  get_category_by_id: '/api/v1/category/get-category-by-id',
+  create_category: '/api/v1/category/create-category',
+  update_category: '/api/v1/category/update-category',
+  delete_category: '/api/v1/category/delete-category',
+
+  get_user_by_id: '/api/v1/user/get-user-by-id',
+  get_all_user: '/api/v1/user/get-all-user',
+  create_user: '/api/v1/user/create-user',
+  update_user: '/api/v1/user/update-user',
+  delete_user: '/api/v1/user/delete-user',
+
+  update_discount: '/api/v1/discount/update-discount',
+  create_discount: '/api/v1/discount/create',
+  get_discout_by_id: '/api/v1/discount/get-by-id',
+  delete_discount: '/api/v1/discount/delete-discount',
+  get_all_discount: '/api/v1/discount/get-all',
+  get_info: '/api/v1/blog/get-info',
+  upload_blog: '/api/v1/blog/upload',
   update_blog: '/api/v1/blog/update-blog',
   delete_blog: '/api/v1/blog/delete-blog',
   get_all_blog: '/api/v1/blog/get-all-blog',
-  get_all_categories: '/api/v1/category/get-all-categories',
   get_by_id: '/api/v1/blog/get-by-id',
   create_blog: '/api/v1/blog/create',
-  get_orders_by_user_id: '/api/v1/order/get-by-user-id',
   get_order_detail_by_order_id: '/api/v1/order-detail/get-by-order-id',
   create_order_detail: '/api/v1/order-detail/create-order-detail',
-  create_order: '/api/v1/order/create-order',
   get_discount_by_code: '/api/v1/discount/get-discount-by-code',
   get_all_cart: '/api/v1/cart/get-all-cart',
   update_cart: '/api/v1/cart/update-cart',
@@ -110,9 +157,6 @@ const endpoint = {
   update_movie: '/api/v1/movie/update-movie',
   create_movie: '/api/v1/movie/create',
   delete_movie: '/api/v1/movie/delete',
-  create_user: '/api/v1/user/create',
-  update_user: '/api/v1/user/update',
-  delete_user: '/api/v1/user/delete',
   get_all_db: '/api/v1/dash-board/get-all',
   get_all_user_db: '/api/v1/user/get-reveneu',
   get_list_movie_by_list_movie_id:

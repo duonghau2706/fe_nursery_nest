@@ -1,7 +1,7 @@
 import iconStar from '@/assets/image/star.svg'
 import moment from 'moment'
 
-const Comment = ({ createdAt, content, name, rated }: any) => {
+const Comment = ({ createdAt, content, name, rated, img }: any) => {
   const renderAppreciate = (value: number) => {
     if (value === 1) return 'Rất tệ'
     else if (value === 2) return 'Chưa ưng lắm'
@@ -38,11 +38,7 @@ const Comment = ({ createdAt, content, name, rated }: any) => {
       <span className="text-[15px] font-[500]">{content}</span>
 
       <div className="w-[171px] h-[128px]">
-        <img
-          className="w-full h-full"
-          src="https://attachment.momocdn.net/social/u/c7e3b0075d54e0d0e18c23095edd01e9619e6148d46534c05e36136a8353a2f7/92225b71-8d1f-41fd-a4a8-523c1dd54756u65a85vb.jpg"
-          alt="img comment"
-        />
+        <img className="w-full h-full" src={img} alt="img comment" />
       </div>
     </div>
   )

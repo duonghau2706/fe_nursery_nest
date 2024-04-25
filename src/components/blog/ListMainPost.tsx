@@ -7,6 +7,7 @@ const ListMainPost = ({ lstMainPost }: any) => {
       {lstMainPost?.map((post: any, index: number) => {
         return (
           <MainPostItem
+            key={post?.id}
             id={post?.id}
             index={index}
             url={post?.img}

@@ -4,26 +4,12 @@ import IconEdit from '@/assets/image/icon_edit.svg'
 import IconView from '@/assets/image/icon_view.svg'
 import style from '@/common.module.scss'
 import { URL } from '@/utils/constants'
-import { renderDateStringYear, renderService } from '@/utils/helper'
+import { renderDateStringYear } from '@/utils/helper'
 import { Button, ConfigProvider, Space, Table } from 'antd'
 import { Link } from 'react-router-dom'
-// import moment from 'moment'
-// import IconEdit from '@/assets/image/icon_edit.svg'
-// import IconDelete from '@/assets/image/icon_delete.svg'
-// import IconDate from '@/assets/image/iconDate.svg'
-// import {
-//   ModalBase,
-//   ModalEditUser,
-//   ModalRecordEffortMember,
-// } from '@/components/modal'
-// import { useMutation, useQueryClient } from 'react-query'
-// import { userApi } from '@/adapter'
-// import { MESSAGE, QUERY_KEY } from '@/utils/constants'
-// import { useParams } from 'react-router-dom'
-// import { toast } from 'react-toastify'
 
 const TableListUser = ({
-  listUser,
+  dataTable,
   loading,
   currentPage,
   perPage,
@@ -43,12 +29,6 @@ const TableListUser = ({
           </div>
         )
       },
-    },
-    {
-      title: 'ID thành viên',
-      dataIndex: 'id',
-      align: 'center',
-      width: '170px',
     },
 
     {
@@ -70,6 +50,9 @@ const TableListUser = ({
       dataIndex: 'born',
       align: 'center',
       width: '130px',
+      render: (row: any, record: any) => (
+        <div>{renderDateStringYear(record?.created_at, '-')}</div>
+      ),
     },
 
     {
@@ -84,54 +67,6 @@ const TableListUser = ({
       dataIndex: 'address',
       align: 'center',
       width: '200px',
-    },
-
-    {
-      title: 'Số dư TK ̣(₫)',
-      dataIndex: 'money',
-      align: 'center',
-      width: '170px',
-      render: (__: any, _: any) => (
-        <div>{Number(_?.money)?.toLocaleString()} </div>
-      ),
-    },
-
-    {
-      title: 'Dịch vụ',
-      dataIndex: 'service',
-      align: 'center',
-      width: '180px',
-      render: (__: any, _: any) => <div>{renderService(_?.service)} </div>,
-    },
-
-    {
-      title: 'Tên ngân hàng',
-      dataIndex: 'bank_name',
-      align: 'center',
-      width: '180px',
-    },
-
-    {
-      title: 'Số tài khoản',
-      dataIndex: 'bank_account',
-      align: 'center',
-      width: '180px',
-    },
-
-    {
-      title: 'TK thành viên',
-      dataIndex: 'is_member',
-      align: 'center',
-      width: '180px',
-      render: (__: any, _: any) => {
-        {
-          return _?.is_member ? (
-            <div className="text-green-ok font-semibold">Đã gia hạn</div>
-          ) : (
-            <div className="text-red-delete font-semibold">Chưa gia hạn</div>
-          )
-        }
-      },
     },
 
     {
@@ -162,13 +97,13 @@ const TableListUser = ({
       fixed: 'right',
       render: (_: any, record: any) => (
         <Space className="flex justify-center items-center">
-          <Link to={`${URL.USER}/view/${record.id}`}>
+          <Link to={`${URL.ADMIN_USER}/view/${record.id}`}>
             <Button
               className="flex items-center justify-center border-none"
               icon={<img src={IconView} width={30} height={17} />}
             ></Button>
           </Link>
-          <Link to={`${URL.USER}/edit/${record.id}`}>
+          <Link to={`${URL.ADMIN_USER}/edit/${record.id}`}>
             <Button
               className="flex items-center justify-center border-none"
               icon={<img src={IconEdit} width={22} height={20} />}
@@ -207,7 +142,7 @@ const TableListUser = ({
           className={style.disableRrowTableCheckbox}
           rowSelection={rowSelection}
           columns={columns as any}
-          dataSource={listUser}
+          dataSource={dataTable}
           scroll={{ x: 1200, y: 430 }}
           pagination={false}
           rowKey="id"
@@ -217,6 +152,7 @@ const TableListUser = ({
           // refetch={refetch}
         />
       </ConfigProvider>
+
       {/* <ModalEditUser
         isModalOpen={isOpenEditModal}
         showModal={showModal}

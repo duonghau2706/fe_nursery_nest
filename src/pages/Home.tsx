@@ -5,6 +5,7 @@ import Support from '@/components/support/Support'
 import { QUERY_KEY } from '@/utils/constants'
 import { Carousel } from 'antd'
 import { useQuery } from 'react-query'
+import bannerLikado from '@/assets/image/bannerLikado.webp'
 
 const Home = () => {
   const { data: products = {} } = useQuery({
@@ -20,7 +21,7 @@ const Home = () => {
       <Carousel autoplay autoplaySpeed={3000} waitForAnimate={true}>
         <div className="bg-auto relative">
           <img
-            src="https://bizweb.dktcdn.net/100/480/125/themes/900039/assets/slide-img5.png?1704944126628"
+            src={bannerLikado}
             alt="banner home"
             className="w-full bg-auto rounded-[5px] border-solid border-[1px] border-transparent"
           />
@@ -30,30 +31,6 @@ const Home = () => {
             background: 'linear-gradient(77deg,rgba(0,0,0,.6),transparent 85%)',
           }}
         ></div> */}
-        </div>
-
-        <div className="bg-auto relative">
-          <img
-            src="https://bizweb.dktcdn.net/100/480/125/themes/900039/assets/slide-img4.png?1704944126628"
-            alt="banner home"
-            className="w-full bg-auto rounded-[5px] border-solid border-[1px] border-transparent"
-          />
-        </div>
-
-        <div className="bg-auto relative">
-          <img
-            src="https://bizweb.dktcdn.net/100/480/125/themes/900039/assets/slide-img1.png?1704944126628"
-            alt="banner home"
-            className="w-full bg-auto rounded-[5px] border-solid border-[1px] border-transparent"
-          />
-        </div>
-
-        <div className="bg-auto relative">
-          <img
-            src="https://bizweb.dktcdn.net/100/480/125/themes/900039/assets/slide-img5.png?1704944126628"
-            alt="banner home"
-            className="w-full bg-auto rounded-[5px] border-solid border-[1px] border-transparent"
-          />
         </div>
       </Carousel>
       {/* <div className=" bg-red-500 top-16"></div> */}

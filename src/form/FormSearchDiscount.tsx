@@ -1,10 +1,24 @@
-import { userApi } from '@/adapter'
+import discountApi from '@/adapter/discount'
 import { QUERY_KEY } from '@/utils/constants'
-import { cleanObj } from '@/utils/helper'
-import { Button, Col, ConfigProvider, Form, Input, Row, Select } from 'antd'
+import {
+  cleanObj,
+  createEndDateTimeStampFromMoment,
+  createStartDateTimeStampFromMoment,
+} from '@/utils/helper'
+import {
+  Button,
+  Col,
+  ConfigProvider,
+  DatePicker,
+  Form,
+  Row,
+  Select,
+} from 'antd'
 import { useQuery } from 'react-query'
 
-const FormSearchUser = ({ onSearchHandler }: any) => {
+const { RangePicker } = DatePicker
+
+const FormSearchDiscount = ({ onSearchHandler }: any) => {
   const [form] = Form.useForm()
 
   const formItemLayout = {
@@ -12,32 +26,56 @@ const FormSearchUser = ({ onSearchHandler }: any) => {
     wrapperCol: { span: 18 },
   }
 
-  const { data: dataUser } = useQuery({
-    queryKey: [QUERY_KEY.GET_ALL_USER],
+  const { data: dataDiscount } = useQuery({
+    queryKey: [QUERY_KEY.GET_ALL_DISCOUNT],
     queryFn: () =>
-      userApi.getAllUser().then((res) => {
-        return res?.data?.data?.listUser
+      discountApi.getAllDiscount().then((res) => {
+        return res?.data?.data?.listDiscount
       }),
   })
 
-  const optionsName: any = []
+  const optionsCode: any = []
 
-  dataUser?.forEach((user: any) => {
-    if (user?.name) {
-      const ele = optionsName.filter((name: any) => name?.label === user?.name)
+  dataDiscount?.forEach((discount: any) => {
+    if (discount?.code)
+      optionsCode.push({
+        label: discount?.code,
+        value: discount?.code,
+      })
+  })
+
+  const optionsSale: any = []
+
+  dataDiscount?.forEach((discount: any) => {
+    if (discount?.sale) {
+      const ele = optionsSale.filter(
+        (sale: any) =>
+          sale?.label === (Number(discount?.sale) * 100).toFixed(0).toString()
+      )
 
       if (ele?.length === 0)
-        optionsName.push({
-          label: user?.name,
-          value: user?.name,
+        optionsSale.push({
+          label: (Number(discount?.sale) * 100).toFixed(0).toString(),
+          value: discount?.sale,
         })
     }
   })
 
   const searchBlogHandler = () => {
-    const dataForm = form.getFieldsValue()
+    const code = form.getFieldValue('code')
+    const sale = form.getFieldValue('sale')
+    const startDate =
+      form.getFieldValue('dateTime')?.[0] &&
+      createStartDateTimeStampFromMoment(form.getFieldValue('dateTime')?.[0])
+    const endDate =
+      form.getFieldValue('dateTime')?.[1] &&
+      createEndDateTimeStampFromMoment(form.getFieldValue('dateTime')?.[1])
+
     const data = cleanObj({
-      ...dataForm,
+      code,
+      sale,
+      startDate,
+      endDate,
     })
 
     onSearchHandler(data)
@@ -87,17 +125,37 @@ const FormSearchUser = ({ onSearchHandler }: any) => {
               <Col span={12}>
                 <Form.Item
                   {...formItemLayout}
-                  name="name"
+                  name="code"
                   label={
-                    <label style={{ fontSize: '15x', width: '110px' }}>
-                      Tên thành viên
+                    <label style={{ fontSize: '15x', width: '100px' }}>
+                      Mã giảm giá
                     </label>
                   }
                 >
                   <Select
                     allowClear
                     showSearch
-                    options={optionsName}
+                    options={optionsCode}
+                    filterOption={(input: any, option: any) =>
+                      (option?.label ?? '')
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                  ></Select>
+                </Form.Item>
+              </Col>
+
+              <Col span={12}>
+                <Form.Item
+                  {...formItemLayout}
+                  className="w-full pr-6"
+                  name="sale"
+                  label="Giảm giá"
+                >
+                  <Select
+                    allowClear
+                    showSearch
+                    options={optionsSale}
                     filterOption={(input: any, option: any) =>
                       (option?.label ?? '')
                         .toLowerCase()
@@ -106,34 +164,25 @@ const FormSearchUser = ({ onSearchHandler }: any) => {
                   />
                 </Form.Item>
               </Col>
-
-              <Col span={12}>
-                <Form.Item
-                  {...formItemLayout}
-                  name="email"
-                  label={
-                    <label style={{ fontSize: '15x', width: '80px' }}>
-                      Email
-                    </label>
-                  }
-                >
-                  <Input allowClear />
-                </Form.Item>
-              </Col>
             </Row>
 
             <Row gutter={50}>
               <Col span={12}>
                 <Form.Item
                   {...formItemLayout}
-                  name="phone"
+                  className="w-full pr-6"
+                  name="dateTime"
                   label={
-                    <label style={{ fontSize: '15x', width: '110px' }}>
-                      Số điện thoại
+                    <label style={{ fontSize: '15x', width: '100px' }}>
+                      Thời gian
                     </label>
                   }
                 >
-                  <Input allowClear />
+                  <RangePicker
+                    className="w-[300px]"
+                    format={'DD/MM/YYYY'}
+                    placeholder={['Từ ngày', 'Đến ngày']}
+                  />
                 </Form.Item>
               </Col>
 
@@ -156,4 +205,4 @@ const FormSearchUser = ({ onSearchHandler }: any) => {
   )
 }
 
-export default FormSearchUser
+export default FormSearchDiscount

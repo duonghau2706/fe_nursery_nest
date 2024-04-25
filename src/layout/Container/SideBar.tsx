@@ -1,11 +1,20 @@
 import useToken from '@/hook/token'
 import { URL } from '@/utils/constants'
-import { HomeOutlined, MailOutlined, UserOutlined } from '@ant-design/icons'
+import {
+  CommentOutlined,
+  FormOutlined,
+  HomeOutlined,
+  UserOutlined,
+} from '@ant-design/icons'
+import CategoryIcon from '@mui/icons-material/Category'
+import DiscountIcon from '@mui/icons-material/Discount'
 import type { MenuProps } from 'antd'
 import { Menu } from 'antd'
 import SubMenu from 'antd/es/menu/SubMenu'
 import React, { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
+import InventoryIcon from '@mui/icons-material/Inventory'
+import AssignmentIcon from '@mui/icons-material/Assignment'
 
 type MenuItem = Required<MenuProps>['items'][number]
 
@@ -105,16 +114,37 @@ const SideBar = () => {
     return [
       ...(decode?.role === 0
         ? [
-            getItem('Dashboard', URL.ADMIN_HOME, <HomeOutlined />),
-            getItem('Quản lý người dùng', URL.ADMIN_USER, <UserOutlined />),
-            getItem('Quản lý sản phẩm', URL.ADMIN_PRODUCT, <MailOutlined />),
-            getItem('Quản lý thể loại', URL.ADMIN_CATEGORY, <MailOutlined />),
-            getItem('Quản lý đánh giá', URL.ADMIN_COMMENT, <MailOutlined />),
-            getItem('Quản lý bài viết', URL.ADMIN_BLOG, <UserOutlined />),
+            getItem('Dashboard', URL.ADMIN_HOME_LIST, <HomeOutlined />),
+            getItem(
+              'Quản lý người dùng',
+              URL.ADMIN_USER_LIST,
+              <UserOutlined />
+            ),
+            getItem(
+              'Quản lý sản phẩm',
+              URL.ADMIN_PRODUCT_LIST,
+              <InventoryIcon />
+            ),
+            getItem(
+              'Quản lý đơn hàng',
+              URL.ADMIN_ORDER_LIST,
+              <AssignmentIcon />
+            ),
+            getItem(
+              'Quản lý thể loại',
+              URL.ADMIN_CATEGORY_LIST,
+              <CategoryIcon />
+            ),
+            getItem(
+              'Quản lý bình luận',
+              URL.ADMIN_COMMENT_LIST,
+              <CommentOutlined />
+            ),
+            getItem('Quản lý bài viết', URL.ADMIN_BLOG_LIST, <FormOutlined />),
             getItem(
               'Quản lý mã giảm giá',
-              URL.ADMIN_DISCOUNT,
-              <UserOutlined />
+              URL.ADMIN_DISCOUNT_LIST,
+              <DiscountIcon />
             ),
             // getItem('Thông tin liên hệ', URL.CONTACT, <InfoCircleOutlined />),
           ]

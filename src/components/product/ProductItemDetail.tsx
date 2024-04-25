@@ -32,10 +32,8 @@ const ProductItemDetail = () => {
 
   const [form] = useForm()
 
-  // const totalMoney = useSelector(
-  //   (state: any) => state?.cartReducers?.totalMoney
-  // )
-  // const cart = useSelector((state: any) => state?.cartReducers?.cart)
+  // const [img, setImg]: any = useState()
+  // const [cmt, setCmt]: any = useState()
 
   const { data: dataCart = [] } = useQuery({
     queryKey: [QUERY_KEY.GET_ALL_CART],
@@ -148,6 +146,27 @@ const ProductItemDetail = () => {
     }
 
     form.setFieldValue('inputQuantity', newQuantity)
+  }
+
+  const onSave = () => {
+    // console.log('cmt', cmt)
+    // console.log('img', img)
+  }
+
+  // const handleChangeComment = (cmt: any) => {
+  //   setCmt(cmt)
+  // }
+
+  // const handleChangeImg = (img: any) => {
+  //   setImg(img)
+  // }
+
+  const handleChangeComment = () => {
+    return
+  }
+
+  const handleChangeImg = () => {
+    return
   }
 
   return (
@@ -330,7 +349,8 @@ const ProductItemDetail = () => {
               createdAt={cmt?.created_at}
               content={cmt?.content}
               name={cmt?.name}
-              rated={cmt.rated}
+              rated={cmt?.rated}
+              img={cmt?.img}
             />
           ))}
 
@@ -361,55 +381,18 @@ const ProductItemDetail = () => {
           <ModalComment
             isOpen={openModalFormComment}
             setIsOpen={setOpenModalFormComment}
-            // onSave={}
-            content={<FormComment />}
+            onSave={onSave}
+            content={
+              <FormComment
+                handleChangeComment={handleChangeComment}
+                handleChangeImg={handleChangeImg}
+              />
+            }
             header={<HeaderModalComment />}
             footer={true}
           />
         </div>
       </div>
-
-      {/* <pre className="whitespace-pre-wrap">
-        BÔNG TẨY TRANG CAO CẤP PHIÊN BẢN DẠNG TÚI LIKADO HỘP 120 MIẾNG: Trang
-        điểm là một trong những hoạt động thường ngày của chị em phụ nữ. Bên
-        cạnh những loại mỹ phẩm như kem dưỡng da hay sữa rửa mặt thì một loại
-        phụ kiện trang điểm cũng là một loại thành phần không thể thiếu hỗ trợ
-        các chị em phụ nữ có thể dễ dàng trong việc trang điểm của mình. Bông
-        trang điểm là một loại phụ kiện không thể thiếu trong việc trang điểm
-        của các chị em phụ nữ. Bông tẩy trang giúp chị em phụ nữ luôn giữ sạch
-        da mặt tuyệt đối. Bông tẩy trang được làm từ nguyên liệu 100% cotton nên
-        mềm mại và an toàn cho da mặt của chị em. Ngoài ra chị em có thể sử dụng
-        bông tẩy trang dùng để thấm dầu, tẩy trang, làm sạch da mặt hiệu quả...
-        Để chọn mua các sản phẩm bông tẩy trang, bông trang điểm chính hãng,
-        chất lượng tốt, an toàn cho da bạn hãy chọn bông tẩy trang LIKADO. Mua
-        ngay bông tẩy trang LIKADO với ngập trang ưu đãi Vì sao bạn nên mua bông
-        tẩy trang? Bông tẩy trang giúp làm sạch da: Được xem là một sản phẩm vô
-        cùng quan trọng trong các bước chăm sóc da. Khi dùng kết hợp với dung
-        dịch tẩy trang giúp lấy đi lớp bụi bẩn, trang điểm bên ngoài một cách
-        nhẹ nhàng. Từ đó làn da trở nên sạch sẽ, khỏe mạnh. Điều này vô cùng
-        quan trọng giúp các bước dưỡng da sau đó phát huy được hiệu quả tốt
-        nhất. Thay vì sử dụng tay hoặc khăn, bông tẩy trang được làm từ chất
-        liệu bông tự nhiên mềm mại nên không hề gây khó chịu, tổn thương cho da
-        mặt. Bởi vậy đây là một sản phẩm hoàn toàn thích hợp khi dùng trên bộ
-        phận quan trọng này. THÔNG TIN CHI TIẾT BÔNG TẨY TRANG LIKADO: - Chất
-        liệu: 100% bông tự nhiên. Tiết kiệm được toner, nước hoa hồng và nước
-        tẩy trang - Bông tẩy trang dạng túi với thiết kế xỏ ngón tay rất tiện
-        khi dùng - Bông tẩy trang Likado được thiết kế sang trọng, nhỏ gọn,
-        thông minh, sẵn sàng là người bạn đồng hành không thể thiếu cho phái đẹp
-        trên mọi nẻo đường. - Bông tẩy trang dạng túi Không bị tưa lông, xơ rối
-        - Bông tẩy trang dạng túi Không bết dính. - Sạch toàn diện. - 1 hộp 120
-        miếng SHOP KHÔNG ĐỌC TIN NHẮN HAY GHI CHÚ KHI ĐÓNG HÀNG NÊN NHỮNGLỖI SAI
-        NÀY SHOP KHÔNG CHỊU TRÁCH NHIỆM LIKADO CAM KẾT VỚI KHÁCH HÀNG ☛ Về sản
-        phẩm: Sản phẩm là hàng chính hãng, đảm bảo uy tín và chất lượng ☛ Về
-        dịch vụ: Shop sẽ trả lời mọi thắc mắc của khách hàng liên quan đến sản
-        phẩm. Nếu các mẹ băn khoăn về sản phẩm nên chat tư vấn trước khi đặt
-        hàng tránh đặt nhầm phân loại . ☛ Thời gian chuẩn bị hàng: Shop luôn sẵn
-        hàng nên thời gian chuẩn bị hàng nhanh QUYỀN LỢI CỦA KHÁCH HÀNG ✔ Chính
-        sách đổi trả hàng miễn phí khi có lỗi do nhà sản xuất #bongtaytrang
-        #bôngtảytrang #bongtaytrang222mieng #bongtaytrangsilcot
-        #bongtaytrang222miengcottonpads #bongtaytrang1000mieng
-        #bongtaytrangcotton#bongtrangdiem
-      </pre> */}
     </div>
   )
 }

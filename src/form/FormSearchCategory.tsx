@@ -1,10 +1,10 @@
-import { userApi } from '@/adapter'
+import categoryApi from '@/adapter/category'
 import { QUERY_KEY } from '@/utils/constants'
 import { cleanObj } from '@/utils/helper'
-import { Button, Col, ConfigProvider, Form, Input, Row, Select } from 'antd'
+import { Button, Col, ConfigProvider, Form, Row, Select } from 'antd'
 import { useQuery } from 'react-query'
 
-const FormSearchUser = ({ onSearchHandler }: any) => {
+const FormSearchCategory = ({ onSearchHandler }: any) => {
   const [form] = Form.useForm()
 
   const formItemLayout = {
@@ -12,24 +12,26 @@ const FormSearchUser = ({ onSearchHandler }: any) => {
     wrapperCol: { span: 18 },
   }
 
-  const { data: dataUser } = useQuery({
-    queryKey: [QUERY_KEY.GET_ALL_USER],
+  const { data: dataCategory } = useQuery({
+    queryKey: [QUERY_KEY.GET_ALL_CATEGORIES],
     queryFn: () =>
-      userApi.getAllUser().then((res) => {
-        return res?.data?.data?.listUser
+      categoryApi.getAllCategories().then((res) => {
+        return res?.data?.data?.listCategory
       }),
   })
 
   const optionsName: any = []
 
-  dataUser?.forEach((user: any) => {
-    if (user?.name) {
-      const ele = optionsName.filter((name: any) => name?.label === user?.name)
+  dataCategory?.forEach((category: any) => {
+    if (category?.name) {
+      const ele = optionsName.filter(
+        (name: any) => name?.label === category?.name
+      )
 
       if (ele?.length === 0)
         optionsName.push({
-          label: user?.name,
-          value: user?.name,
+          label: category?.name,
+          value: category?.name,
         })
     }
   })
@@ -90,7 +92,7 @@ const FormSearchUser = ({ onSearchHandler }: any) => {
                   name="name"
                   label={
                     <label style={{ fontSize: '15x', width: '110px' }}>
-                      Tên thành viên
+                      Tên thể loại
                     </label>
                   }
                 >
@@ -103,37 +105,7 @@ const FormSearchUser = ({ onSearchHandler }: any) => {
                         .toLowerCase()
                         .includes(input.toLowerCase())
                     }
-                  />
-                </Form.Item>
-              </Col>
-
-              <Col span={12}>
-                <Form.Item
-                  {...formItemLayout}
-                  name="email"
-                  label={
-                    <label style={{ fontSize: '15x', width: '80px' }}>
-                      Email
-                    </label>
-                  }
-                >
-                  <Input allowClear />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <Row gutter={50}>
-              <Col span={12}>
-                <Form.Item
-                  {...formItemLayout}
-                  name="phone"
-                  label={
-                    <label style={{ fontSize: '15x', width: '110px' }}>
-                      Số điện thoại
-                    </label>
-                  }
-                >
-                  <Input allowClear />
+                  ></Select>
                 </Form.Item>
               </Col>
 
@@ -156,4 +128,4 @@ const FormSearchUser = ({ onSearchHandler }: any) => {
   )
 }
 
-export default FormSearchUser
+export default FormSearchCategory

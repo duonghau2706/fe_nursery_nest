@@ -24,14 +24,14 @@ const MainPostItem = ({
     >
       {index % 2 === 0 ? (
         <>
-          <div className="h-[248px]" onClick={handleViewBlogDetail}>
+          <div className="max-w-[33%]" onClick={handleViewBlogDetail}>
             <img
               src={url}
               alt="img main post"
-              className="h-full bg-cover cursor-pointer mx-auto flex"
+              className="h-[248px] bg-cover cursor-pointer mx-auto flex"
             />
           </div>
-          <div>
+          <div className="min-w-[67%]">
             <div
               className="font-[700] text-[28px] leading-[1.3] cursor-pointer hover:text-green-main"
               onClick={handleViewBlogDetail}
@@ -55,13 +55,13 @@ const MainPostItem = ({
                 textAlign: 'justify',
               }}
             >
-              <Interweave content={content} className="ck-editor" />
+              <Interweave content={content} className="ck-editor w-full" />
             </div>
           </div>
         </>
       ) : (
         <>
-          <div className="max-w-[650px]">
+          <div className="max-w-[67%]">
             <div
               className="font-[700] text-[28px]  leading-[1.3] cursor-pointer hover:text-green-main"
               onClick={handleViewBlogDetail}
@@ -88,7 +88,7 @@ const MainPostItem = ({
               <Interweave content={content} className="ck-editor" />
             </div>
           </div>
-          <div className="w-full h-[240px]">
+          <div className="min-w-[33%] w-full h-[240px]">
             <img
               src={url}
               alt="img main post"

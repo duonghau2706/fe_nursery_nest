@@ -1,10 +1,10 @@
-import { userApi } from '@/adapter'
+import commentApi from '@/adapter/comment'
 import { QUERY_KEY } from '@/utils/constants'
 import { cleanObj } from '@/utils/helper'
-import { Button, Col, ConfigProvider, Form, Input, Row, Select } from 'antd'
+import { Button, Col, ConfigProvider, Form, Row, Select } from 'antd'
 import { useQuery } from 'react-query'
 
-const FormSearchUser = ({ onSearchHandler }: any) => {
+const FormSearchComment = ({ onSearchHandler }: any) => {
   const [form] = Form.useForm()
 
   const formItemLayout = {
@@ -12,24 +12,42 @@ const FormSearchUser = ({ onSearchHandler }: any) => {
     wrapperCol: { span: 18 },
   }
 
-  const { data: dataUser } = useQuery({
-    queryKey: [QUERY_KEY.GET_ALL_USER],
+  const { data: dataComment } = useQuery({
+    queryKey: [QUERY_KEY.GET_ALL_COMMENT],
     queryFn: () =>
-      userApi.getAllUser().then((res) => {
-        return res?.data?.data?.listUser
+      commentApi.getAllComment().then((res) => {
+        return res?.data?.data?.listComment
       }),
   })
 
-  const optionsName: any = []
+  const optionsProductName: any = []
 
-  dataUser?.forEach((user: any) => {
-    if (user?.name) {
-      const ele = optionsName.filter((name: any) => name?.label === user?.name)
+  dataComment?.forEach((comment: any) => {
+    if (comment?.product_name) {
+      const ele = optionsProductName.filter(
+        (product_name: any) => product_name?.label === comment?.product_name
+      )
 
       if (ele?.length === 0)
-        optionsName.push({
-          label: user?.name,
-          value: user?.name,
+        optionsProductName.push({
+          label: comment?.product_name,
+          value: comment?.product_name,
+        })
+    }
+  })
+
+  const optionsUserName: any = []
+
+  dataComment?.forEach((comment: any) => {
+    if (comment?.user_name) {
+      const ele = optionsUserName.filter(
+        (user_name: any) => user_name?.label === comment?.user_name
+      )
+
+      if (ele?.length === 0)
+        optionsUserName.push({
+          label: comment?.user_name,
+          value: comment?.user_name,
         })
     }
   })
@@ -87,17 +105,40 @@ const FormSearchUser = ({ onSearchHandler }: any) => {
               <Col span={12}>
                 <Form.Item
                   {...formItemLayout}
-                  name="name"
+                  name="product_name"
                   label={
-                    <label style={{ fontSize: '15x', width: '110px' }}>
-                      Tên thành viên
+                    <label style={{ fontSize: '15x', width: '120px' }}>
+                      Tên sản phẩm
                     </label>
                   }
                 >
                   <Select
                     allowClear
                     showSearch
-                    options={optionsName}
+                    options={optionsProductName}
+                    filterOption={(input: any, option: any) =>
+                      (option?.label ?? '')
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                  ></Select>
+                </Form.Item>
+              </Col>
+
+              <Col span={12}>
+                <Form.Item
+                  {...formItemLayout}
+                  name="user_name"
+                  label={
+                    <label style={{ fontSize: '15x', width: '120px' }}>
+                      Tên người bình luận
+                    </label>
+                  }
+                >
+                  <Select
+                    allowClear
+                    showSearch
+                    options={optionsUserName}
                     filterOption={(input: any, option: any) =>
                       (option?.label ?? '')
                         .toLowerCase()
@@ -106,38 +147,6 @@ const FormSearchUser = ({ onSearchHandler }: any) => {
                   />
                 </Form.Item>
               </Col>
-
-              <Col span={12}>
-                <Form.Item
-                  {...formItemLayout}
-                  name="email"
-                  label={
-                    <label style={{ fontSize: '15x', width: '80px' }}>
-                      Email
-                    </label>
-                  }
-                >
-                  <Input allowClear />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <Row gutter={50}>
-              <Col span={12}>
-                <Form.Item
-                  {...formItemLayout}
-                  name="phone"
-                  label={
-                    <label style={{ fontSize: '15x', width: '110px' }}>
-                      Số điện thoại
-                    </label>
-                  }
-                >
-                  <Input allowClear />
-                </Form.Item>
-              </Col>
-
-              <Col span={12}></Col>
             </Row>
           </Form>
         </div>
@@ -156,4 +165,4 @@ const FormSearchUser = ({ onSearchHandler }: any) => {
   )
 }
 
-export default FormSearchUser
+export default FormSearchComment

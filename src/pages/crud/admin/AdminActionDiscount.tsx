@@ -1,19 +1,22 @@
-import categoryApi from '@/adapter/category'
+import discountApi from '@/adapter/discount'
 import useToken from '@/hook/token'
 import { QUERY_KEY, URL } from '@/utils/constants'
-import { createTimeStampFromMoment } from '@/utils/helper'
-import { Button, Col, ConfigProvider, Form, Input, Row } from 'antd'
+import { createTimeStampFromMoment, create_CODE } from '@/utils/helper'
+import { Button, Col, ConfigProvider, DatePicker, Form, Input, Row } from 'antd'
+import dayjs from 'dayjs'
 import moment from 'moment'
 import { useEffect } from 'react'
 import { useMutation, useQuery } from 'react-query'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
-const AdminActionCategory = () => {
+const AdminActionDiscount = () => {
   const { verifyToken } = useToken()
   const { decode } = verifyToken()
   const [form] = Form.useForm()
   const navigate = useNavigate()
+
+  const { RangePicker } = DatePicker
 
   const formItemLayout = {
     label: { span: 6 },
@@ -23,10 +26,10 @@ const AdminActionCategory = () => {
   const { type, id } = useParams()
   const { pathname } = useLocation()
 
-  const { data: dataCategory = {} } = useQuery({
-    queryKey: [QUERY_KEY.GET_CATEGORY_BY_ID, pathname],
+  const { data: dataDiscount = {} } = useQuery({
+    queryKey: [QUERY_KEY.GET_DISCOUNT_BY_ID, pathname],
     queryFn: () =>
-      categoryApi.getCategoryById({ categoryId: id }).then((res: any) => {
+      discountApi.getById({ discountId: id }).then((res: any) => {
         return res?.data?.data
       }),
     enabled: !!id, //Phải có id
@@ -34,20 +37,25 @@ const AdminActionCategory = () => {
 
   useEffect(() => {
     if (id) {
-      form.setFieldValue('name', dataCategory?.name)
+      form.setFieldValue('code', dataDiscount?.code)
+      form.setFieldValue('sale', (Number(dataDiscount?.sale) * 100).toFixed(0))
+      form.setFieldValue('dateTime', [
+        dayjs(dataDiscount?.start_date),
+        dayjs(dataDiscount?.end_date),
+      ])
     }
-  }, [dataCategory])
+  }, [dataDiscount])
 
-  const mutationCreateCategory = useMutation({
-    mutationFn: (params: any) => categoryApi.createCategory(params),
+  const mutationCreateDiscount = useMutation({
+    mutationFn: (params: any) => discountApi.create(params),
     onSuccess: () => {
-      toast.success('Thêm mới thể loại thành công!', {
+      toast.success('Thêm mới mã giảm giá thành công!', {
         autoClose: 2000,
         style: { marginTop: '50px' },
       })
 
       setTimeout(() => {
-        navigate(URL.ADMIN_CATEGORY_LIST)
+        navigate(URL.ADMIN_DISCOUNT_LIST)
       }, 2000)
     },
 
@@ -59,15 +67,15 @@ const AdminActionCategory = () => {
     },
   })
 
-  const mutationUpdateCategory = useMutation({
-    mutationFn: (params: any) => categoryApi.updateCategory(params),
+  const mutationUpdateDiscount = useMutation({
+    mutationFn: (params: any) => discountApi.updateDiscount(params),
     onSuccess: () => {
-      toast.success('Cập nhật thể loại thành công!', {
+      toast.success('Cập nhật mã giảm giá thành công!', {
         autoClose: 2000,
         style: { marginTop: '50px' },
       })
       setTimeout(() => {
-        navigate(URL.ADMIN_CATEGORY_LIST)
+        navigate(URL.ADMIN_DISCOUNT_LIST)
       }, 700)
     },
   })
@@ -76,18 +84,32 @@ const AdminActionCategory = () => {
     const data = form.getFieldsValue()
 
     if (type === 'create') {
-      mutationCreateCategory.mutate({
+      mutationCreateDiscount.mutate({
         ...data,
+        sale:
+          Number(data?.sale) > 1
+            ? Number(data?.sale) / 100
+            : Number(data?.sale),
+        code: create_CODE(),
         created_by: decode?.name,
+        startDate: new Date(data?.dateTime?.[0]).toISOString(),
+        endDate: new Date(data?.dateTime?.[1]).toISOString(),
         created_at: createTimeStampFromMoment(moment()),
         updated_at: createTimeStampFromMoment(moment()),
       })
     } else if (type === 'edit') {
-      mutationUpdateCategory.mutate({
-        id,
+      mutationUpdateDiscount.mutate({
         ...data,
-        updated_by: decode?.name,
+        id,
+        sale:
+          Number(data?.sale) > 1
+            ? Number(data?.sale) / 100
+            : Number(data?.sale),
+        code: data?.code,
+        startDate: new Date(data?.dateTime?.[0]).toISOString(),
+        endDate: new Date(data?.dateTime?.[1]).toISOString(),
         updated_at: createTimeStampFromMoment(moment()),
+        update_by: decode?.name,
       })
     }
   }
@@ -131,10 +153,10 @@ const AdminActionCategory = () => {
       >
         <div className="mb-3 text-[30px] text-black-main font-semibold">
           {type === 'create'
-            ? 'Thêm thể loại mới'
+            ? 'Thêm mã giảm giá mới'
             : type === 'edit'
-            ? 'Chỉnh sửa thông tin thể loại'
-            : 'Chi tiết thông tin thể loại'}
+            ? 'Chỉnh sửa thông tin mã giảm giá'
+            : 'Chi tiết thông tin mã giảm giá'}
         </div>
 
         <div className="w-full pb-5 pt-9 flex justify-center bg-white border border-solid rounded border-gray-primary text-black-primary">
@@ -148,14 +170,10 @@ const AdminActionCategory = () => {
               <Col span={12}>
                 <Form.Item
                   {...formItemLayout}
-                  // initialValue={id && dataCategory?.sale}
+                  // initialValue={id && dataDiscount?.sale}
                   className="w-ful mb-3"
-                  name="name"
-                  label={
-                    <label style={{ fontSize: '15x', width: '75px' }}>
-                      Tên thể loại
-                    </label>
-                  }
+                  name="sale"
+                  label="Giảm giá"
                 >
                   <Input
                     disabled={type === 'view' ? true : false}
@@ -165,7 +183,26 @@ const AdminActionCategory = () => {
                 </Form.Item>
               </Col>
 
-              <Col span={12}></Col>
+              <Col span={12}>
+                <Form.Item
+                  {...formItemLayout}
+                  // initialValue={id && dataDiscount?.sale}
+                  className="w-ful mb-3"
+                  name="dateTime"
+                  label={
+                    <label style={{ fontSize: '15x', width: '100px' }}>
+                      Thời gian
+                    </label>
+                  }
+                >
+                  <RangePicker
+                    className="w-[300px]"
+                    disabled={type === 'view'}
+                    format={'DD/MM/YYYY'}
+                    placeholder={['Từ ngày', 'Đến ngày']}
+                  />
+                </Form.Item>
+              </Col>
             </Row>
 
             <div className="flex gap-2 justify-center mt-5">
@@ -192,4 +229,4 @@ const AdminActionCategory = () => {
   )
 }
 
-export default AdminActionCategory
+export default AdminActionDiscount

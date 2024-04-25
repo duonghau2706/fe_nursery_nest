@@ -5,8 +5,9 @@ import { DisplayRecord } from '@/components/select'
 import TableListBlog from '@/components/table/TableListBlog'
 import FormSearchBlog from '@/form/FormSearchBlog'
 import { QUERY_KEY, URL } from '@/utils/constants'
+import { cleanObj } from '@/utils/helper'
 import { Button, ConfigProvider, Pagination } from 'antd'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
 import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -16,28 +17,35 @@ const AdminBlog = () => {
 
   const navigate = useNavigate()
   const [perPage, setPerPage] = useState(10)
-  // const [totalRecord, setTotalRecord] = useState(0)
-  // const [dataSearch, setDataSearch]: any = useState()
   const [openModalDeleteBlog, setOpenModalDeleteBlog] = useState(false)
   const [selectedRowKeys, setSelectedRowKeys] = useState([])
+  const [dataSearch, setDataSearch]: any = useState()
+  const [dataBlog, setDataBlog]: any = useState([])
+  const [paginate, setPaginate]: any = useState()
 
-  const { data: dataBlog = [] } = useQuery({
-    queryKey: [QUERY_KEY.GET_ALL_BLOG],
-    queryFn: async () => {
-      return await blogApi.getAllBlog().then((res: any) => {
-        return res?.data?.data
+  const { isLoading } = useQuery({
+    queryKey: [QUERY_KEY.GET_ALL_BLOG, currentPage, perPage, dataSearch],
+    queryFn: () => {
+      const obj = cleanObj({
+        perPage,
+        currentPage: currentPage || 1,
+        ...dataSearch,
+      })
+
+      blogApi.getAllBlog(obj).then((res: any) => {
+        setDataBlog(res?.data?.data?.listBlog)
+        setPaginate(res?.data?.data?.pagination)
       })
     },
   })
 
+  const onSearchBlogHandler = (dataBlogSearch: any) => {
+    setDataSearch(dataBlogSearch)
+  }
   const onSelectedChangeHandler = (value: any) => {
     setPerPage(value)
-    //  navigate(URL.MANAGE_ADMIN)
+    navigate(URL.ADMIN_BLOG_LIST)
   }
-
-  // const setCurrentPageListUser = useCallback((value: number) => {
-  //   // navigate(`${URL.MANAGE_ADMIN}/${value}`)
-  // }, [])
 
   //---------- DELETE -------------//
   const mutationDelete = useMutation({
@@ -49,7 +57,7 @@ const AdminBlog = () => {
         style: { marginTop: '50px' },
       })
       setTimeout(() => {
-        navigate(URL.ADMIN_BLOG)
+        navigate(URL.ADMIN_BLOG_LIST)
       }, 700)
     },
   })
@@ -73,12 +81,27 @@ const AdminBlog = () => {
     setOpenModalDeleteBlog(false)
   }
 
+  const showTotal = (total: any, range: any) => {
+    return (
+      <label className="text-[14px]">
+        {`Hiển thị ${range[0]} ~ ${
+          range[1]
+        } trên ${total.toLocaleString()} bản ghi `}
+      </label>
+    )
+  }
+
+  const setCurrentPageBlog = useCallback((value: number) => {
+    navigate(`${URL.ADMIN_BLOG_LIST}/${value}`)
+  }, [])
+
   return (
     <div className="pt-[30px] px-10 pb-7 bg-[#e8e6e6] text-black-main flex flex-col gap-3">
       <div className="flex flex-col gap-1">
         <h2 className="text-[30px] font-[600]">Quản lý bài viết</h2>
         <FormSearchBlog
-          dataBlog={dataBlog}
+          // dataBlog={dataBlogOrigin}
+          onSearchBlog={onSearchBlogHandler}
           // listUser={listUser}
           // onSearchAdmin={onSearchUserHandler}
         />
@@ -102,7 +125,7 @@ const AdminBlog = () => {
         <div className="flex justify-between items-center">
           <DisplayRecord handleChange={onSelectedChangeHandler} />
           <label className="font-bold text-[14px]">
-            Tổng số bài viết: {Number(dataBlog?.length).toLocaleString()}
+            Tổng số bài viết: {Number(paginate?.total).toLocaleString()}
           </label>
         </div>
 
@@ -110,7 +133,7 @@ const AdminBlog = () => {
           perPage={perPage}
           currentPage={currentPage || 1}
           listBlog={dataBlog}
-          // loading={isLoading}
+          loading={isLoading}
           setSelectedRowKeys={setSelectedRowKeys}
           // refetch={refetch}
         />
@@ -128,11 +151,11 @@ const AdminBlog = () => {
         >
           <Pagination
             className="w-full flex"
-            // total={totalRecord}
+            total={paginate?.total}
             current={+(currentPage as string) || 1}
             pageSize={perPage || 10}
-            // onChange={setCurrentPageListUser}
-            // showTotal={showTotal}
+            onChange={setCurrentPageBlog}
+            showTotal={showTotal}
           />
         </ConfigProvider>
 

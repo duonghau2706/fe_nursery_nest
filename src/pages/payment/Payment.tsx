@@ -21,6 +21,7 @@ import { toast } from 'react-toastify'
 import moment from 'moment'
 import orderApi from '@/adapter/order'
 import orderDetailApi from '@/adapter/orderDetail'
+import logoLikado from '@/assets/image/logoLikado.png'
 // import axios from 'axios'
 
 const Payment = () => {
@@ -235,7 +236,7 @@ const Payment = () => {
       <div className="bg-white text-black-primary text-[14px] flex justify-between pl-[60px] pr-5">
         <div className="w-2/3 pb-8">
           <img
-            src="https://scontent.fhan19-1.fna.fbcdn.net/v/t39.30808-6/353672737_257697366846138_1682770389796949429_n.png?_nc_cat=107&ccb=1-7&_nc_sid=5f2048&_nc_eui2=AeHhE33SEkIz5FwM78Y1chwummrbAKoz-jSaatsAqjP6NLEObJZPuzaLXa7OTr31Xvtd7hWcF_TB4STaGjl0H5Qf&_nc_ohc=21lkytWOeowAb6_iSkY&_nc_ht=scontent.fhan19-1.fna&oh=00_AfBtQtBVa6IpNFofj6vsMaETP-VOQ1H0mASTlsYUY8c1Zw&oe=66146F34"
+            src={logoLikado}
             alt="img"
             className="h-[150px] block mx-auto mb-[-13px]"
           />
