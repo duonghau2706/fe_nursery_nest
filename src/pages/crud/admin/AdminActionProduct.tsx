@@ -87,6 +87,8 @@ const AdminActionProduct = () => {
             ? 'Khăn lau mặt'
             : dataProduct?.category === 1
             ? 'Bông tẩy trang'
+            : dataProduct?.category === 2
+            ? 'Khăn khô đa năng'
             : dataProduct?.category === 3
             ? 'Khăn nén'
             : dataProduct?.category === 4
@@ -261,6 +263,7 @@ const AdminActionProduct = () => {
                   }
                 >
                   <Select
+                    disabled={type === 'view' ? true : false}
                     allowClear
                     showSearch
                     options={optionsCategory}
