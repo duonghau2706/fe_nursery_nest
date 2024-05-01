@@ -60,6 +60,7 @@ const Payment = () => {
   const [msgSale, setMsgSale] = useState<string>()
   const [index, setIndex]: any = useState()
   const [continuee, setContinuee] = useState<boolean>()
+  const [discountId, setDiscountId] = useState<boolean>()
 
   // const [isNextStep, setIsNextStep] = useState(false)
   const [selected, setSelected]: any = useState({
@@ -189,6 +190,7 @@ const Payment = () => {
         setMsgSale(`Mã giảm giá không tồn tại!`)
       }
 
+      setDiscountId(res?.data?.data?.[0]?.id)
       setSale(SALE)
     },
   })
@@ -234,7 +236,7 @@ const Payment = () => {
   const handleOrder = () => {
     const dataOrder = form.getFieldsValue()
     const method = methodPayment
-    const discountId = dataOrder?.inputDiscount
+    // const discountId = dataOrder?.inputDiscount
     const province = selectedProvince?.label
     const district = selectedDistrict?.label
     const ward = selectedWard?.label
@@ -248,7 +250,7 @@ const Payment = () => {
     const totalMoney = (originalTotalMoney * (100 - sale)) / 100 + ship
 
     if (!name || !phone || !province) {
-      toast.error('Bạn phải điền địa chỉ giao hàng.', {
+      toast.error('Bạn phải điền đầy đủ thông tin giao hàng.', {
         autoClose: 2000,
         style: { marginTop: '50px' },
       })

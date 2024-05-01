@@ -12,12 +12,11 @@ const OrderDetailItem = ({
   amount,
 }: any) => {
   const navigate = useNavigate()
-
   const { data: prd = {} } = useQuery({
     queryKey: [QUERY_KEY.GET_PRODUCT_BY_ID, productId],
     queryFn: () =>
       productApi.getInfoProductById({ id: productId }).then((res) => {
-        return res?.data?.data?.[0]
+        return res?.data?.data
       }),
   })
 

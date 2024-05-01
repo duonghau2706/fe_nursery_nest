@@ -70,6 +70,16 @@ const TableListUser = ({
     },
 
     {
+      title: 'Vai trò',
+      dataIndex: 'role',
+      align: 'center',
+      width: '130px',
+      render: (row: any, record: any) => (
+        <div>{record?.role === 1 ? 'Admin' : 'Khách'}</div>
+      ),
+    },
+
+    {
       title: 'Ngày tạo',
       dataIndex: 'created_at',
       align: 'center',
