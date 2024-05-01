@@ -1,7 +1,8 @@
 import { productApi } from '@/adapter'
+import categoryApi from '@/adapter/category'
 import ListProducts from '@/components/product/ListProducts'
-import { CATEGORIES, QUERY_KEY, URL } from '@/utils/constants'
-import { cleanObj, handleFilterCategoryFromDataRes } from '@/utils/helper'
+import { QUERY_KEY, URL } from '@/utils/constants'
+import { cleanObj } from '@/utils/helper'
 import { ConfigProvider, Radio } from 'antd'
 import { useEffect, useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
@@ -10,55 +11,67 @@ import { Link, useParams } from 'react-router-dom'
 const Category = () => {
   const { type } = useParams()
 
-  const [products, setProducts] = useState()
   const [lstPrdByType, setLstPrdByType]: any = useState()
-  const [range, setRange]: any = useState<{
-    value: number
-    minRange: number
-    maxRange: number
-  }>()
+  const [range, setRange]: any = useState()
   const [prop, setProp]: any = useState()
 
-  useQuery({
+  const { data: dataProduct = [] } = useQuery({
     queryKey: [QUERY_KEY.GET_ALL_PRODUCT],
     queryFn: () =>
-      productApi.getAllProduct().then((res) => {
-        setProducts(res?.data?.data)
+      productApi.getAll().then((res) => {
+        return res?.data?.data?.listProduct
       }),
   })
 
-  const ctg = CATEGORIES.filter(
-    (category) => category.type === type?.toUpperCase()
+  const { data: dataCategory = [] } = useQuery({
+    queryKey: [QUERY_KEY.GET_ALL_CATEGORIES],
+    queryFn: () =>
+      categoryApi.getAllCategories().then((res) => {
+        return res?.data?.data?.listCategory
+      }),
+  })
+
+  // const ctg = CATEGORIES.filter(
+  //   (category) => category.type === type?.toUpperCase()
+  // )
+
+  const ctg = dataCategory.filter(
+    (category: any) => category?.url_name === type?.toLowerCase()
+  )
+
+  const prds = dataProduct.filter(
+    (prd: any) => prd?.category_id === ctg?.[0]?.id
   )
 
   //nme of category
   const title = ctg?.[0]?.name
 
-  //typeOfCategory = [0, 4]
-  const typeOfCategory = ctg?.[0]?.value
+  //categoryId
+  const categoryId = ctg?.[0]?.id
   // const cstLstPrdByType = handleFilterCategoryFromDataRes(
-  //   typeOfCategory,
+  //   categoryId,
   //   products
   // )
 
   useEffect(() => {
-    // console.log('typeofcate', typeOfCategory)
+    // console.log('typeofcate', categoryId)
     // console.log('product eff', products)
     setRange({ ...range, value: undefined })
     setProp({ ...prop, value: undefined })
-    setLstPrdByType(handleFilterCategoryFromDataRes(typeOfCategory, products))
-  }, [products, type])
-  // const lstPrdByType = handleFilterCategoryFromDataRes(typeOfCategory, products)
+    setLstPrdByType(prds)
+    // setLstPrdByType(handleFilterCategoryFromDataRes(categoryId, products))
+  }, [type])
+  // const lstPrdByType = handleFilterCategoryFromDataRes(categoryId, products)
 
   // useEffect(() => {
-  //   setLstPrdByType(handleFilterCategoryFromDataRes(typeOfCategory, products))
+  //   setLstPrdByType(handleFilterCategoryFromDataRes(categoryId, products))
   // }, [type])
 
   const priceOptions = [
     { label: 'Giá dưới 30.000đ', value: 0 },
-    { label: '30.000đ - 40.000đ', value: 1 },
-    { label: '40.000đ - 50.000đ', value: 2 },
-    { label: 'Giá trên 50.000đ', value: 3 },
+    { label: '30.000đ - 100.000đ', value: 1 },
+    { label: '100.000đ - 200.000đ', value: 2 },
+    { label: 'Giá trên 200.000đ', value: 3 },
   ]
 
   const sortOptions = [
@@ -122,11 +135,11 @@ const Category = () => {
       case 0:
         return { value: 0, maxRange: 30000 }
       case 1:
-        return { value: 1, minRange: 30000, maxRange: 40000 }
+        return { value: 1, minRange: 30000, maxRange: 100000 }
       case 2:
-        return { value: 2, minRange: 40000, maxRange: 50000 }
+        return { value: 2, minRange: 100000, maxRange: 200000 }
       case 3:
-        return { value: 3, minRange: 50000 }
+        return { value: 3, minRange: 200000 }
       default:
         return
     }
@@ -161,7 +174,7 @@ const Category = () => {
     //   renderProductsByCondition(cstLstPrdByType, 'range', e?.target?.value)
     // )
     const dataMutate = cleanObj({
-      typeOfCategory,
+      categoryId,
       minRange: renderRange(e?.target?.value)?.minRange,
       maxRange: renderRange(e?.target?.value)?.maxRange,
       cmpType: prop?.cmpType,
@@ -175,7 +188,7 @@ const Category = () => {
     setProp(renderProp(e?.target?.value))
 
     const dataMutate = cleanObj({
-      typeOfCategory,
+      categoryId,
       minRange: range?.minRange,
       maxRange: range?.maxRange,
       cmpType: renderProp(e?.target?.value)?.cmpType,
@@ -185,14 +198,38 @@ const Category = () => {
     productMutation.mutate(dataMutate)
   }
 
+  const createUrlName = (text: string) => {
+    return text
+      .toLowerCase() // Chuyển đổi tất cả ký tự thành chữ thường
+      .normalize('NFD') // Chuẩn hóa chuỗi về dạng NFC để giữ lại ký tự đặc biệt như đ, ê, ă, ô
+      .replace(/[\u0300-\u036f]/g, '') // Loại bỏ tất cả các ký tự diacritic (dấu thanh)
+      .replace(/đ/g, 'd') // Thay thế ký tự "đ" thành "d"
+      .replace(/[^\w\s]/g, '') // Loại bỏ các ký tự đặc biệt
+      .replace(/\s+/g, '_') // Thay thế khoảng trắng bằng dấu gạch dưới
+  }
+
+  const handleResetFilter = () => {
+    setRange(undefined)
+    setProp(undefined)
+    setLstPrdByType(prds)
+  }
+
   return (
     <div className="flex gap-8 mx-[75px] my-5 px-4 py-3 pb-7 text-black-main border-solid border-transparent rounded-[10px] bg-white text-[16px]">
-      <div className="flex flex-col gap-5 max-w-[25%]">
+      <div className="flex flex-col gap-2 max-w-[25%]">
         <div>
           <div className="text-green-main font-[700] text-[25px] mb-1">
             Bộ lọc sản phẩm
           </div>
           <i>Giúp lọc nhanh sản phẩm bạn tìm kiếm</i>
+          {(range || prop) && (
+            <div
+              className="text-red-inactive mt-2 cursor-pointer"
+              onClick={handleResetFilter}
+            >
+              Xóa bộ lọc
+            </div>
+          )}
         </div>
 
         <div>
@@ -214,60 +251,22 @@ const Category = () => {
         <div className="flex flex-col gap-[6px] mt-5">
           <div className="font-[700] text-[18px] mb-1 uppercase">Danh mục</div>
           <div className="flex flex-col gap-2">
-            <Link
-              to={`${URL.CATEGORY}/khan_lau_mat`}
-              className={
-                type === 'khan_lau_mat'
-                  ? 'text-green-main hover:text-green-main'
-                  : 'text-black-nur hover:text-green-main'
-              }
-            >
-              Khăn lau mặt
-            </Link>
+            {dataCategory?.map((cate: any) => {
+              const urlName = createUrlName(cate?.name)
 
-            <Link
-              to={`${URL.CATEGORY}/bong_tay_trang`}
-              className={
-                type === 'bong_tay_trang'
-                  ? 'text-green-main hover:text-green-main'
-                  : 'text-black-nur hover:text-green-main'
-              }
-            >
-              Bông tẩy trang
-            </Link>
-
-            <Link
-              to={`${URL.CATEGORY}/khan_kho_da_nang`}
-              className={
-                type === 'khan_kho_da_nang'
-                  ? 'text-green-main hover:text-green-main'
-                  : 'text-black-nur hover:text-green-main'
-              }
-            >
-              Khăn khô đa năng
-            </Link>
-
-            <Link
-              to={`${URL.CATEGORY}/khan_nen`}
-              className={
-                type === 'khan_nen'
-                  ? 'text-green-main hover:text-green-main'
-                  : 'text-black-nur hover:text-green-main'
-              }
-            >
-              Khăn nén
-            </Link>
-
-            <Link
-              to={`${URL.CATEGORY}/may_hut_sua`}
-              className={
-                type === 'may_hut_sua'
-                  ? 'text-green-main hover:text-green-main'
-                  : 'text-black-nur hover:text-green-main'
-              }
-            >
-              Máy hút sữa
-            </Link>
+              return (
+                <Link
+                  to={`${URL.CATEGORY}/${urlName}`}
+                  className={
+                    type === `${urlName}`
+                      ? 'text-green-main hover:text-green-main'
+                      : 'text-black-nur hover:text-green-main'
+                  }
+                >
+                  {cate?.name}
+                </Link>
+              )
+            })}
           </div>
         </div>
       </div>

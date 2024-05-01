@@ -104,9 +104,13 @@ const MenuUser = () => {
                     to={URL.CART}
                     className="flex w-[30px] h-[50px] my-auto relative hover:scale-125"
                   >
-                    <div className="absolute right-[-10px] rounded-[50%] bg-yellow-main w-[25px] h-[25px] text-center leading-[25px] text-white text-[13px]">
-                      {dataCart?.carts?.length}
-                    </div>
+                    {decode?.id ? (
+                      <div className="absolute right-[-10px] rounded-[50%] bg-yellow-main w-[25px] h-[25px] text-center leading-[25px] text-white text-[13px]">
+                        {dataCart?.carts?.length}
+                      </div>
+                    ) : (
+                      ''
+                    )}
                     <ShoppingCartIcon
                       style={{ fontSize: '30px' }}
                       // hover:size-9

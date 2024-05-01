@@ -1,6 +1,5 @@
 import orderDetailApi from '@/adapter/orderDetail'
 import { QUERY_KEY } from '@/utils/constants'
-import { renderFullrAdress } from '@/utils/helper'
 import moment from 'moment'
 import { useQuery } from 'react-query'
 import { useLocation } from 'react-router-dom'
@@ -62,14 +61,7 @@ const OrderDetail = () => {
 
       <div className="pt-[14px] pb-4 border-solid border-gray-borderSecondary border-x-0 border-t-0 border ">
         <div className="font-[500] text-[14px]">Địa chỉ</div>
-        <div>
-          {renderFullrAdress(
-            dataOrderDetail?.[0]?.adress,
-            dataOrderDetail?.[0]?.ward,
-            dataOrderDetail?.[0]?.district,
-            dataOrderDetail?.[0]?.province
-          )}
-        </div>
+        <div>{dataOrderDetail?.[0]?.full_adress}</div>
       </div>
 
       <div className="pt-[14px] pb-4 border-solid border-gray-borderSecondary border-x-0 border-t-0 border ">

@@ -1,16 +1,17 @@
-const Card = ({ icon, title, value }: any) => {
+const Card = ({ icon, bg, title, value }: any) => {
   return (
-    <div
-      style={{ boxShadow: '8px 10px 12px -7px rgba(0,0,0,0.67)' }}
-      className="min-w-[220px] w-fit bg-black-main flex pl-4 pr-7 pt-3 pb-6 border-0 border-solid rounded-[9px] gap-5"
-    >
-      <div className="w-[59px] h-[59px] my-auto">
-        <img className="w-full h-full" src={icon} alt="imdb" />
-      </div>
-      <div className="flex flex-col justify-center items-center mx-auto leading-[35px]">
-        <h3 className="text-red-main mb-0 pb-0">{title}</h3>
-        <div className="text-[33px] font-bold text-white mt-0 pt-0">
-          {value}
+    <div className="px-5 py-5 flex bg-white rounded-[10px] text-black-main w-1/3">
+      <div className="flex flex-col gap-0 justify-center w-full">
+        <div
+          className={`text-green-main p-[10px] bg-[${bg}] rounded-[50%] w-fit flex mx-auto`}
+        >
+          <img src={icon} alt="icon" />
+        </div>
+        <div className="font-[800] text-[24px] mt-2 text-center">
+          {Number(value).toLocaleString()} ₫
+        </div>
+        <div className="text-[#727272] font-[600] text-center text-[18px]">
+          {title}
         </div>
       </div>
     </div>

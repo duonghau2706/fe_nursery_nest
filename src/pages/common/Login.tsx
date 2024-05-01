@@ -26,9 +26,14 @@ const Login = () => {
   const mutationLogin = useMutation({
     mutationFn: (params: any) => loginApi.postLogin(params),
     onSuccess: (res) => {
-      res.data.token && navigate(URL.HOME)
-      // : setShowMessage('Tài khoản hoặc mật khẩu không đúng.')
-      localStorage.setItem('token', res?.data?.token)
+      if (!res.data.token.token) {
+        return
+      }
+
+      localStorage.setItem('token', res?.data?.token.token)
+      res.data.token.token && res.data.token?.existedUser?.role === 1
+        ? navigate(URL.ADMIN_HOME)
+        : navigate(URL.HOME)
     },
     onError: () => {
       toast.error('Tài khoản hoặc mật khẩu không đúng.')
@@ -132,6 +137,7 @@ const Login = () => {
               >
                 <Form.Item name="password">
                   <Input
+                    type="password"
                     size="large"
                     placeholder="Mật khẩu"
                     className="h-[42px] rounded-[20px] px-5 placeholder:text-[#ffffff] bg-[#ffffff33] border-none hover:bg-[#ffffff33]"

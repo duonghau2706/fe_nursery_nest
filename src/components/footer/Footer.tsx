@@ -78,14 +78,17 @@ const Footer = () => {
               className="p-1 bg-green-main"
               style={{ fontSize: '30px', color: 'white' }}
             />
-            <div>Số 8 Nguyễn Duy Cung, Quận Gò Vấp, TP. HCM</div>
+            <div>
+              số 205/42 Phố Thịnh Liệt, Quận Hoàng Mai, Thành phố Hà Nội, Việt
+              Nam
+            </div>
           </div>
           <div className="flex gap-2">
             <PhoneAndroidIcon
               className="p-1  bg-green-main"
               style={{ fontSize: '30px', color: 'white' }}
             />
-            <div>Tel: 0909014299</div>
+            <div>Tel: 0984 019 869</div>
           </div>
         </div>
       </div>

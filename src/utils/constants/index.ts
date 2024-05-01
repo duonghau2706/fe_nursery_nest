@@ -58,6 +58,7 @@ const URL = {
 }
 
 const QUERY_KEY = {
+  RESET_CART: 'RESET_CART',
   GET_ORDER_BY_ID: 'GET_ORDER_BY_ID',
   GET_ALL_ORDER: 'GET_ALL_ORDER',
   GET_COMMENT_BY_ID: 'GET_COMMENT_BY_ID',
@@ -102,6 +103,10 @@ const QUERY_KEY = {
 }
 
 const endpoint = {
+  reset_cart: '/api/v1/cart/reset-cart',
+  get_product_by_category: '/api/v1/product/get-product-by-category',
+  get_all_db: '/api/v1/dash-board/get-all',
+
   get_all_prd: '/api/v1/product/get-all-prd',
   create_product: '/api/v1/product/create-product',
   update_product: '/api/v1/product/update-product',
@@ -164,7 +169,6 @@ const endpoint = {
   update_movie: '/api/v1/movie/update-movie',
   create_movie: '/api/v1/movie/create',
   delete_movie: '/api/v1/movie/delete',
-  get_all_db: '/api/v1/dash-board/get-all',
   get_all_user_db: '/api/v1/user/get-reveneu',
   get_list_movie_by_list_movie_id:
     '/api/v1/movie/get-list-movie-by-list-movie-id',
@@ -184,6 +188,7 @@ const endpoint = {
   create_transaction_histories: '/api/v1/transaction-histories/create',
   get_report_pdf: '/api/v1/report/pdf',
   render_ejs_revenue: '/api/v1/render-ejs-revenue',
+  render_ejs_revenue_category: '/api/v1/render-ejs-revenue-category',
   render_ejs_movie: '/api/v1/render-ejs-movie',
 
   update_profile_user: '/api/v1/user/update-profile',
@@ -487,13 +492,13 @@ const DATE_DMY = 'DD/MM/YYYY'
 //   { name: 'HAI_HUOC', value: 'Hài hước' },
 // ]
 
-const CATEGORIES = [
-  { type: 'KHAN_LAU_MAT', name: 'Khăn lau mặt', value: 0 },
-  { type: 'BONG_TAY_TRANG', name: 'Bông tẩy trang', value: 1 },
-  { type: 'KHAN_KHO_DA_NANG', name: 'Khăn khô đa năng', value: 2 },
-  { type: 'KHAN_NEN', name: 'Khăn nén', value: 3 },
-  { type: 'MAY_HUT_SUA', name: 'Máy hút sữa', value: 4 },
-]
+// const CATEGORIES = [
+//   { type: 'KHAN_LAU_MAT', name: 'Khăn lau mặt', value: 0 },
+//   { type: 'BONG_TAY_TRANG', name: 'Bông tẩy trang', value: 1 },
+//   { type: 'KHAN_KHO_DA_NANG', name: 'Khăn khô đa năng', value: 2 },
+//   { type: 'KHAN_NEN', name: 'Khăn nén', value: 3 },
+//   { type: 'MAY_HUT_SUA', name: 'Máy hút sữa', value: 4 },
+// ]
 
 const TYPE = [
   'Hành Động',
@@ -536,7 +541,7 @@ const OPTIONS_BANKNAME = [
 export {
   OPTIONS_BANKNAME,
   OPTIONS_SERVICE,
-  CATEGORIES,
+  // CATEGORIES,
   TYPE,
   URL,
   QUERY_KEY,

@@ -63,38 +63,20 @@ const AdminActionProduct = () => {
   const optionsCategory = dataCategory?.map((category: any) => {
     return {
       label: category?.name,
-      value:
-        category?.name === 'Khăn lau mặt'
-          ? 0
-          : category?.name === 'Bông tẩy trang'
-          ? 1
-          : category?.name === 'Khăn khô đa năng'
-          ? 2
-          : category?.name === 'Khăn nén'
-          ? 3
-          : category?.name === 'Máy hút sữa'
-          ? 4
-          : 5,
+      value: category?.id,
     }
   })
 
   useEffect(() => {
     if (id) {
+      const cate = dataCategory?.filter(
+        (cate: any) => cate?.id === dataProduct?.category_id
+      )
+
       form.setFieldValue('name', dataProduct?.name)
-      form.setFieldValue('category', {
-        label:
-          dataProduct?.category === 0
-            ? 'Khăn lau mặt'
-            : dataProduct?.category === 1
-            ? 'Bông tẩy trang'
-            : dataProduct?.category === 2
-            ? 'Khăn khô đa năng'
-            : dataProduct?.category === 3
-            ? 'Khăn nén'
-            : dataProduct?.category === 4
-            ? 'Máy hút sữa'
-            : '',
-        value: dataProduct?.category,
+      form.setFieldValue('category_id', {
+        label: cate?.[0]?.name,
+        value: cate?.[0]?.id,
       })
       form.setFieldValue('summarize', dataProduct?.summarize)
       form.setFieldValue('originalPrice', dataProduct?.original_price)
@@ -255,7 +237,7 @@ const AdminActionProduct = () => {
                   {...formItemLayout}
                   // initialValue={id && dataProduct?.sale}
                   className="w-[405px] mb-3"
-                  name="category"
+                  name="category_id"
                   label={
                     <label style={{ fontSize: '15x', width: '90px' }}>
                       Thể loại

@@ -63,7 +63,7 @@ const Support = () => {
             Tư vấn miễn phí 24/7
           </div>
           <div className="font-[800] text-[14px] text-[#ff5c01]">
-            Hotline : 02463.283.634
+            Hotline : 0984 019 869
           </div>
         </div>
       </div>

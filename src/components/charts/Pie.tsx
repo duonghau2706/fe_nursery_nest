@@ -11,14 +11,27 @@ import { Empty } from 'antd'
 
 import { memo } from 'react'
 
-const PieDB = ({ viewVeryFew, viewFew, viewMuch, viewVeryMuch }: any) => {
-  const COLORS = ['#B81D24', '#F86475', '#E68F96', '#F0A787']
-  const data = [
-    { name: '< 1k', value: Number(viewVeryFew) },
-    { name: '1k - 10k', value: Number(viewFew) },
-    { name: '10k - 100k', value: Number(viewMuch) },
-    { name: '> 100k', value: Number(viewVeryMuch) },
-  ]
+const PieDB = ({ listRevenueByCategory }: any) => {
+  const randomColor = () => {
+    // Tạo một số ngẫu nhiên từ 0 đến 16777215 (2^24 - 1), đây là giới hạn của mã HEX
+    const randomHex = Math.floor(Math.random() * 16777215).toString(16)
+
+    // Bổ sung các số 0 vào đầu chuỗi HEX nếu cần
+    const hexColor = '#' + randomHex.padStart(6, '0')
+
+    return hexColor
+  }
+
+  const COLORS: any = []
+
+  const len = listRevenueByCategory?.length
+  for (let i = 0; i < len; i++) {
+    COLORS.push(randomColor())
+  }
+
+  const data = listRevenueByCategory?.map((ele: any) => {
+    return { name: ele?.name, value: Number(ele?.revenue_by_category) }
+  })
 
   const RADIAN = Math.PI / 180
   const renderCustomizedLabel = ({
@@ -55,7 +68,7 @@ const PieDB = ({ viewVeryFew, viewFew, viewMuch, viewVeryMuch }: any) => {
           y1={y1}
           x2={lineX1}
           y2={lineY1}
-          stroke="white"
+          stroke="red"
           strokeWidth="2"
         />
         <line
@@ -63,13 +76,13 @@ const PieDB = ({ viewVeryFew, viewFew, viewMuch, viewVeryMuch }: any) => {
           y1={y2}
           x2={lineX2}
           y2={lineY2}
-          stroke="white"
+          stroke="red"
           strokeWidth="2"
         />
         <text
           x={x2 < cx ? x2 - 15 : x2 + 15}
           y={y2}
-          fill="white"
+          fill="red"
           textAnchor={x2 > cx ? 'start' : 'end'}
           dominantBaseline="central"
           fontWeight={700}
@@ -84,13 +97,19 @@ const PieDB = ({ viewVeryFew, viewFew, viewMuch, viewVeryMuch }: any) => {
   const renderLegend = ({ payload }: any) => {
     return (
       <ul
-        style={{ listStyle: 'none', paddingLeft: 0, color: 'white' }}
-        className="flex flex-wrap gap-3 justify-center top-0"
+        style={{
+          listStyle: 'none',
+          paddingLeft: 0,
+          color: 'white',
+          lineHeight: '10px',
+          marginBottom: '20px',
+        }}
+        className=" flex flex-wrap gap-3 justify-center top-0"
       >
         {payload.map((entry: any, index: any) => (
           <li
             key={`item-${index}`}
-            style={{ marginBottom: '5px', fontWeight: '600' }}
+            style={{ marginBottom: '5px', fontWeight: '600', color: 'black' }}
           >
             <span
               className="rounded-[50%]"
@@ -112,15 +131,12 @@ const PieDB = ({ viewVeryFew, viewFew, viewMuch, viewVeryMuch }: any) => {
   return (
     <div
       style={{ boxShadow: '8px 10px 12px -7px rgba(0,0,0,0.67)' }}
-      className="px-3 w-fit pb-5 bg-black-main border-0 border-solid rounded-[18px]"
+      className="px-3 w-fit pb-5 bg-white border-0 border-solid rounded-[18px]"
     >
-      <div className="flex justify-center pt-2 pb-1 text-[20px] text-[#d33035] font-semibold">
-        Lượt xem
+      <div className="flex justify-center pt-2 pb-1 text-[20px] text-black-main font-semibold">
+        Doanh thu theo loại sản phẩm
       </div>
-      {!Number(viewVeryFew) &&
-      !Number(viewFew) &&
-      !Number(viewMuch) &&
-      !Number(viewVeryMuch) ? (
+      {!listRevenueByCategory ? (
         <ConfigProvider
           theme={{
             token: {

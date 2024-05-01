@@ -47,11 +47,17 @@ const FormSearchBlog = ({ onSearchBlog }: any) => {
   const optionsName: any = []
 
   dataBlog?.forEach((blog: any) => {
-    if (blog?.author)
-      optionsName.push({
-        label: blog?.author,
-        value: blog?.author,
-      })
+    if (blog?.author) {
+      const ele = optionsName.filter(
+        (name: any) => name?.value === blog?.author
+      )
+
+      if (ele?.length === 0)
+        optionsName.push({
+          label: blog?.author,
+          value: blog?.author,
+        })
+    }
   })
 
   const searchBlogHandler = () => {

@@ -61,9 +61,19 @@ const TableListOrder = ({
 
     {
       title: 'Địa chỉ',
-      dataIndex: 'address',
+      dataIndex: 'full_address',
       align: 'center',
       width: '200px',
+      // render: (row: any, record: any) => (
+      //   <div>
+      //     {renderFullrAdress(
+      //       record?.address,
+      //       record?.ward,
+      //       record?.district,
+      //       record?.city
+      //     )}
+      //   </div>
+      // ),
     },
 
     {

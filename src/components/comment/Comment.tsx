@@ -37,9 +37,11 @@ const Comment = ({ createdAt, content, name, rated, img }: any) => {
 
       <span className="text-[15px] font-[500]">{content}</span>
 
-      <div className="w-[171px] h-[128px]">
-        <img className="w-full h-full" src={img} alt="img comment" />
-      </div>
+      {img && (
+        <div className="w-[171px] h-[128px]">
+          <img className="w-full h-full" src={img} alt="img comment" />
+        </div>
+      )}
     </div>
   )
 }

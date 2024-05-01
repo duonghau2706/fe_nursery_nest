@@ -20,6 +20,8 @@ import { toast } from 'react-toastify'
 import Comment from '../comment/Comment'
 import HeaderModalComment from '../modal/ModalComment/HeaderModalComment'
 import ModalComment from '../modal/ModalComment/ModalComment'
+import { Interweave } from 'interweave'
+import commentApi from '@/adapter/comment'
 
 const ProductItemDetail = () => {
   const navigate = useNavigate()
@@ -32,8 +34,10 @@ const ProductItemDetail = () => {
 
   const [form] = useForm()
 
-  // const [img, setImg]: any = useState()
-  // const [cmt, setCmt]: any = useState()
+  const [img, setImg]: any = useState()
+  const [cmt, setCmt]: any = useState()
+  const [rated, setRated]: any = useState()
+  const [isReset, setIsReset] = useState<boolean>(false)
 
   const { data: dataCart = [] } = useQuery({
     queryKey: [QUERY_KEY.GET_ALL_CART],
@@ -44,14 +48,33 @@ const ProductItemDetail = () => {
   })
 
   const { data: dataComment = {} } = useQuery({
-    queryKey: [QUERY_KEY.GET_COMMENT_BY_PRODUCT_ID],
+    queryKey: [QUERY_KEY.GET_COMMENT_BY_PRODUCT_ID, prd],
     queryFn: () =>
-      productApi.getCommentByProductId({ id: prd?.id }).then((res) => {
-        return res?.data?.data
-      }),
+      productApi
+        .getCommentByProductId({ id: prd?.product_id || prd?.id })
+        .then((res) => {
+          return res?.data?.data
+        }),
   })
 
-  const avgRated = dataComment?.avgRated?.[0]?.avg | 0
+  const { data: dataProduct = {} } = useQuery({
+    queryKey: [QUERY_KEY.GET_PRODUCT_BY_ID, prd],
+    queryFn: () =>
+      productApi
+        .getInfoProductById({ id: prd?.product_id || prd?.id })
+        .then((res) => {
+          return res?.data?.data
+        }),
+  })
+
+  // const totalRated = dataComment?.reduce(
+  //   (accumulator: any, currentValue: any) => {
+  //     // Chuyển đổi rated thành số và cộng vào tổng (accumulator)
+  //     return accumulator + Number(currentValue?.rated)
+  //   },
+  //   0
+  // ) // Giá trị khởi tạo của tổng là 0
+  const avgRated = dataComment?.avgRated?.[0]?.avg || 0
   const lstCommnet = dataComment?.lstCmt
 
   const [openModalFormComment, setOpenModalFormComment] = useState(false)
@@ -70,8 +93,10 @@ const ProductItemDetail = () => {
   const onAddProductHandler = () => {
     const quantity = Number(form.getFieldValue('inputQuantity'))
 
-    const idx = dataCart?.carts?.findIndex(
-      (item: any) => item?.productId === prd?.id
+    const idx = dataCart?.carts?.findIndex((item: any) =>
+      prd?.product_id
+        ? item?.product_id === prd?.product_id
+        : item?.product_id === prd?.id
     )
 
     if (idx === -1) {
@@ -80,7 +105,7 @@ const ProductItemDetail = () => {
         type: 'insert',
         id: create_UUID(),
         userId: decode?.id,
-        productId: prd.id,
+        productId: prd?.product_id || prd?.id,
         quantity,
         createdBy: decode?.name,
         createAt: createTimeStampFromMoment(moment()),
@@ -91,21 +116,23 @@ const ProductItemDetail = () => {
       cartMutation.mutate({
         type: 'update',
         userId: decode?.id,
-        productId: prd.id,
+        productId: prd?.product_id || prd?.id,
         quantity: dataCart?.carts[idx].quantity + quantity,
       })
     }
 
     // dispatch(
-    //   addProductToCart({ id: prd.id, price: prd.originalPrice, quantity })
+    //   addProductToCart({ id: prd.id, price: prd.original_price, quantity })
     // )
   }
 
   const onPaymentHandler = () => {
     const quantity = Number(form.getFieldValue('inputQuantity'))
 
-    const idx = dataCart?.carts?.findIndex(
-      (item: any) => item?.productId === prd?.id
+    const idx = dataCart?.carts?.findIndex((item: any) =>
+      prd?.product_id
+        ? item?.product_id === prd?.product_id
+        : item?.product_id === prd?.id
     )
 
     if (idx === -1) {
@@ -114,7 +141,7 @@ const ProductItemDetail = () => {
         type: 'insert',
         id: create_UUID(),
         userId: decode?.id,
-        productId: prd.id,
+        productId: prd?.product_id || prd?.id,
         quantity,
         createdBy: decode?.name,
         createAt: createTimeStampFromMoment(moment()),
@@ -125,7 +152,7 @@ const ProductItemDetail = () => {
       cartMutation.mutate({
         type: 'update',
         userId: decode?.id,
-        productId: prd.id,
+        productId: prd?.product_id || prd?.id,
         quantity: dataCart?.carts[idx].quantity + quantity,
       })
     }
@@ -148,25 +175,55 @@ const ProductItemDetail = () => {
     form.setFieldValue('inputQuantity', newQuantity)
   }
 
+  const mutationComment = useMutation({
+    mutationFn: (params: any) => commentApi.createComment(params),
+    onSuccess: () => {
+      queryClient.invalidateQueries([QUERY_KEY.GET_COMMENT_BY_PRODUCT_ID])
+      toast.success('Thêm bình luận thành công.', {
+        autoClose: 1500,
+        style: { marginTop: '50px' },
+      })
+      setImg(undefined)
+      setCmt(undefined)
+      setRated(undefined)
+      setOpenModalFormComment(false)
+    },
+  })
+
   const onSave = () => {
-    // console.log('cmt', cmt)
-    // console.log('img', img)
+    if (!rated) {
+      toast.error('Vui lòng chọn sao cho sản phẩm!', {
+        autoClose: 2000,
+        style: { marginTop: '50px' },
+      })
+
+      return
+    }
+
+    setIsReset(true)
+    mutationComment.mutate({
+      product_id: prd?.product_id || prd?.id,
+      user_id: decode?.id,
+      rated,
+      content: cmt,
+      img: img?.[0]?.thumbUrl,
+    })
   }
 
-  // const handleChangeComment = (cmt: any) => {
-  //   setCmt(cmt)
-  // }
-
-  // const handleChangeImg = (img: any) => {
-  //   setImg(img)
-  // }
-
-  const handleChangeComment = () => {
-    return
+  const handleChangeComment = (cmt: any) => {
+    setCmt(cmt)
   }
 
-  const handleChangeImg = () => {
-    return
+  const handleChangeImg = (img: any) => {
+    setImg(img)
+  }
+
+  const handleChangeRate = (rated: any) => {
+    setRated(rated)
+  }
+
+  const handlePostComment = () => {
+    setOpenModalFormComment(true)
   }
 
   return (
@@ -180,7 +237,7 @@ const ProductItemDetail = () => {
         <div>
           <div className="font-[800] text-[22px]">{prd.name}</div>
           <div className="text-[30px] font-[700] text-green-main my-3">
-            {Number(prd.originalPrice).toLocaleString()}₫
+            {Number(prd?.original_price).toLocaleString()}₫
           </div>
           <div
             style={{
@@ -192,10 +249,7 @@ const ProductItemDetail = () => {
               textAlign: 'justify',
             }}
           >
-            <strong>Mô tả: </strong> KHĂN LAU MẶT DÙNG 1 LẦN LIKADO DÙNG CHO SPA
-            DẠNG TÚI RÚT - Khăn lau mặt dùng 1 lần likado cotton mềm mịn chuyên
-            dùng cho các spa, thẩm mỹ viện làm đẹp, sử dụng 1 lần là giải pháp
-            tối ưu khi không còn cảm giác thô ráp, ẩmmmm aiaaaai ajsnanj mm
+            <strong>Mô tả: </strong> {dataProduct?.summarize}
           </div>
           <div className="flex mt-5 mb-10 gap-2">
             <strong className="mr-7">Số lượng:</strong>
@@ -260,50 +314,10 @@ const ProductItemDetail = () => {
       </div>
 
       <div className="bg-white pl-9 pr-[40px] py-5 rounded-[10px] text-[15px]">
-        <div className="mb-2">
-          KHĂN LAU MẶT DÙNG 1 LẦN LIKADO DÙNG CHO SPA DẠNG TÚI RÚT
-        </div>
-        - Khăn lau mặt dùng 1 lần likado cotton mềm mịn chuyên dùng cho các spa,
-        thẩm mỹ viện làm đẹp, sử dụng 1 lần là giải pháp tối ưu khi không còn
-        cảm giác thô ráp, ẩm mốc và mùi khó chịu.
-        <br /> - Khăn lau mặt dùng 1 lần likado có chất liệu vải không dệt thành
-        phần 100% xơ Viscose từ thiên nhiên nên thấm nước tuyệt đối và mềm mịn.
-        <br /> - Khăn lau mặt dùng 1 lần likado đã được kiểm định an toàn ở cấp
-        độ cao nhất, có thể dùng cho trẻ nhỏ dưới 36 tháng tuổi.
-        <div>
-          <img src={prd.img} alt="icon cart" className="mt-4 w-full" />
-        </div>
-        THÔNG TIN KHĂN LAU MẶT DÙNG 1 LẦN LIKADO
-        <br /> - Kích thước khăn: 20x20 cm
-        <br /> - Thành phần: vải không dệt thành phần 100% xơ Viscose từ thiên
-        nhiên
-        <br /> - Quy cách đóng gói: Khăn lau mặt dùng 1 lần likado được thiết kế
-        dạng túi rút tiện lợi
-        <br /> - Số lượng: 1túi.
-        <br /> - Công dụng: Khăn lau mặt dùng 1 lần likado dùng làm khăn lau
-        mặt, vệ sinh cá nhân tẩy trang, vệ sinh cho bé, vệ sinh dụng cụ thiết bị
-        trong gia đình,...
-        <br /> - Khăn lau mặt dùng 1 lần likado có thể dùng khô hoặc dùng ướt.
-        SHOP KHÔNG ĐỌC TIN NHẮN HAY GHI CHÚ KHI ĐÓNG HÀNG NÊN NHỮNG LỖI SAI NÀY
-        SHOP KHÔNG CHỊU TRÁCH NHIỆM LIKADO CAM KẾT VỚI KHÁCH HÀNG
-        <br /> ☛ Về sản phẩm: Khăn lau mặt dùng 1 lần likado là hàng chính hãng,
-        đảm bảo uy tín và chất lượng
-        <br /> ☛ Về dịch vụ: Shop sẽ trả lời mọi thắc mắc của khách hàng liên
-        quan đến khăn lau mặt dùng 1 lần likado. Nếu các mẹ băn khoăn về khăn
-        lau mặt dùng 1 lần likado nên chat tư vấn trước khi đặt hàng tránh đặt
-        nhầm phân loại .
-        <br /> ☛ Thời gian chuẩn bị hàng: Shop luôn sẵn hàng nên thời gian chuẩn
-        bị hàng nhanh nhất . QUYỀN LỢI CỦA KHÁCH HÀNG
-        <br /> ✔ Chính sách đổi trả hàng miễn phí khi có lỗi do nhà sản xuất
-        <br /> #khanmatkho #khanmatkhodanang #khanlaumatkho #khanmatkhodung1lan
-        #khanlaumat1lan #khanlaumat1lannhatban
-        #khanlaumat1lanspa#khanlaumat1lanchobe #khanlaumat1lanlikado
-        #khanlaumat1lancuon #khanlaumat1landangrut
-        #khanlaumat1lancoboc#khanlaumatkhodung1lan #khanlaumatdung1lanlikado
-        #khanlaumatkho #khanlaumatmotlan #khangiaylaumatspa
-        #khanlaumatdung1lantrongspa #khanlaumatdung1lan
-        #khanlaumatdung1landangnen #khanmatdung1lan #khandung1lan
-        #khandung1lanlaumat
+        <Interweave
+          content={dataProduct?.description}
+          className="ck-editor w-full"
+        />
       </div>
 
       <div className="bg-white pl-9 pr-[40px] py-5 rounded-[10px] font-[900] text-[22px]">
@@ -311,7 +325,7 @@ const ProductItemDetail = () => {
           <div className="text-[24px] text-black-primary">Đánh giá</div>
           <div
             className="flex gap-2 bg-blue-secondary px-[10px] py-1 border-[1px] border-solid cursor-pointer"
-            onClick={() => setOpenModalFormComment(true)}
+            onClick={handlePostComment}
           >
             <img
               src={iconSend}
@@ -334,14 +348,20 @@ const ProductItemDetail = () => {
                 className="w-[36px] h-[36px] text-red-500 fill-red-500"
               />
             </div>
-            <div className="text-[#525252] flex pb-0 items-baseline">
-              <div className="text-[36px]">{avgRated}</div>
-              <div className="flex text-[14px] font-[400] gap-[3px]">
-                <div>/5</div>
-                <div>·</div>
-                <div>{lstCommnet?.length || 0} đánh giá</div>
+            {avgRated > 0 ? (
+              <div className="text-[#525252] flex pb-1 items-baseline">
+                <div className="text-[36px]">{Number(avgRated).toFixed(1)}</div>
+                <div className="flex text-[14px] font-[400] gap-[3px]">
+                  <div>/5</div>
+                  <div>·</div>
+                  <div>{lstCommnet?.length || 0} đánh giá</div>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className=" text-[#525252] flex pb-0 items-center text-[18px]">
+                Chưa có đánh giá nào
+              </div>
+            )}
           </div>
 
           {lstCommnet?.map((cmt: any) => (
@@ -386,9 +406,15 @@ const ProductItemDetail = () => {
               <FormComment
                 handleChangeComment={handleChangeComment}
                 handleChangeImg={handleChangeImg}
+                isReset={isReset}
               />
             }
-            header={<HeaderModalComment />}
+            header={
+              <HeaderModalComment
+                handleChangeRate={handleChangeRate}
+                isReset={isReset}
+              />
+            }
             footer={true}
           />
         </div>

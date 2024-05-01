@@ -1,18 +1,21 @@
+import cartApi from '@/adapter/cart'
+import orderDetailApi from '@/adapter/orderDetail'
 import bannerLikado from '@/assets/image/likado.png'
+import useToken from '@/hook/token'
 import { QUERY_KEY, URL } from '@/utils/constants'
 import { Button, ConfigProvider } from 'antd'
+import { useQuery } from 'react-query'
 import { useLocation, useNavigate } from 'react-router-dom'
 import PaymentListProduct from './PaymentListProduct'
-import useToken from '@/hook/token'
-import { useQuery } from 'react-query'
-import orderDetailApi from '@/adapter/orderDetail'
-import { renderFullrAdress } from '@/utils/helper'
 
 const PaymentSuccess = () => {
   const navigate = useNavigate()
 
   const { state } = useLocation()
-  const { orderId } = state
+  const { orderId, paymentMethod } = state
+
+  const { verifyToken } = useToken()
+  const { decode } = verifyToken()
 
   const { data: dataOrderDetail = [] } = useQuery({
     queryKey: [QUERY_KEY.GET_ORDER_DETAIL_BY_ORDER_ID],
@@ -22,8 +25,10 @@ const PaymentSuccess = () => {
       }),
   })
 
-  const { verifyToken } = useToken()
-  const { decode } = verifyToken()
+  useQuery({
+    queryKey: [QUERY_KEY.RESET_CART],
+    queryFn: () => cartApi.resetCard({ userId: decode?.id }),
+  })
 
   return (
     <div className="text-[14px] bg-[#f5f5f5] text-black-main min-h-[100vh]">
@@ -75,12 +80,7 @@ const PaymentSuccess = () => {
               <div className="w-1/2">
                 <div className="font-[600] text-[20px]">Địa chỉ nhận hàng</div>
                 <div className="mt-[6px]">
-                  {renderFullrAdress(
-                    dataOrderDetail?.[0]?.adress,
-                    dataOrderDetail?.[0]?.ward,
-                    dataOrderDetail?.[0]?.district,
-                    dataOrderDetail?.[0]?.province
-                  )}
+                  {dataOrderDetail?.[0]?.fullAddress}
                 </div>
               </div>
             </div>
@@ -90,7 +90,7 @@ const PaymentSuccess = () => {
                 <div className="font-[600] text-[20px]">
                   Phương thức thanh toán
                 </div>
-                <div>Thanh toán khi giao hàng (COD) </div>
+                <div>{paymentMethod}</div>
               </div>
 
               <div className="w-1/2">

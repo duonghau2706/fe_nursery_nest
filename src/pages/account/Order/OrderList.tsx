@@ -12,6 +12,7 @@ const OrderList = ({ setOrderDetail, lstOrder }: any) => {
           statusMoney={order?.statusMoney}
           statusShip={order?.statusShip}
           address={order?.address}
+          full_address={order?.fullAddress}
           ward={order?.ward}
           district={order?.district}
           province={order?.province}

@@ -9,6 +9,11 @@ const getCommentByProductId = async (params?: any) =>
     (res) => res.data
   )
 
+const getProductByCategory = async (params?: any) =>
+  await sendGet(`${endpoint.get_product_by_category}`, params).then(
+    (res) => res.data
+  )
+
 const getAll = async (params?: any) =>
   await sendGet(`${endpoint.get_all_prd}`, params).then((res) => res.data)
 
@@ -37,6 +42,7 @@ const productApi = {
   deleteProduct,
   getAll,
   getAllProduct,
+  getProductByCategory,
   getCommentByProductId,
   getInfoProductById,
   sortByCondition,

@@ -1,5 +1,4 @@
 import { URL } from '@/utils/constants'
-import { renderFullrAdress } from '@/utils/helper'
 import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
 
@@ -9,10 +8,7 @@ const OrderItem = ({
   orderCode,
   statusMoney,
   statusShip,
-  adress,
-  ward,
-  district,
-  province,
+  full_address,
   totalMoney,
   createdAt,
 }: any) => {
@@ -52,9 +48,7 @@ const OrderItem = ({
         </div>
       </div>
 
-      <div className="font-[800]">
-        Địa chỉ: {renderFullrAdress(adress, ward, district, province)}
-      </div>
+      <div className="font-[800]">Địa chỉ: {full_address}</div>
 
       <div className="text-[14px]">
         Ngày: {moment(createdAt)?.format('DD/MM/YYYY')}

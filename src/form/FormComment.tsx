@@ -1,9 +1,13 @@
 import { PlusOutlined } from '@ant-design/icons'
-import { ConfigProvider, Upload, UploadFile, UploadProps } from 'antd'
+import { Button, ConfigProvider, Upload, UploadFile, UploadProps } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
-const FormComment = ({ handleChangeComment, handleChangeImg }: any) => {
+const FormComment = ({
+  handleChangeComment,
+  handleChangeImg,
+  isReset,
+}: any) => {
   const [fileList, setFileList] = useState<UploadFile[]>()
 
   const handleChange: UploadProps['onChange'] = ({ fileList }) => {
@@ -11,14 +15,32 @@ const FormComment = ({ handleChangeComment, handleChangeImg }: any) => {
     handleChangeImg([...fileList])
   }
 
+  useEffect(() => {
+    setFileList(undefined)
+  }, [isReset])
+
   const uploadButton = (
-    <button style={{ border: 0, background: 'none' }} type="button">
-      <PlusOutlined />
-      <div style={{ marginTop: 8 }}>Upload</div>
-    </button>
+    <ConfigProvider
+      theme={{
+        components: {
+          Button: {
+            colorPrimaryHover: 'black',
+          },
+        },
+      }}
+    >
+      <Button style={{ border: 0, background: 'none' }} htmlType="submit">
+        <PlusOutlined />
+        <div style={{ marginTop: 8 }}>Upload</div>
+      </Button>
+    </ConfigProvider>
   )
 
   const handlerChangeCmt = (e: any) => {
+    if (isReset) {
+      e.target.value = ''
+      return
+    }
     handleChangeComment(e?.target?.value)
   }
 
@@ -27,6 +49,7 @@ const FormComment = ({ handleChangeComment, handleChangeImg }: any) => {
       <ConfigProvider
         theme={{
           token: {
+            colorPrimary: 'black',
             controlOutline: '#d9d9d9',
             controlOutlineWidth: 1,
             colorPrimaryHover: '#d9d9d9',

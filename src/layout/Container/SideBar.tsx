@@ -62,6 +62,7 @@ const SideBar = () => {
 
   const onOpenChange: MenuProps['onOpenChange'] = (keys) => {
     const latestOpenKey = keys.find((key) => openKeys.indexOf(key) === -1)
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     if (rootSubmenuKeys.indexOf(latestOpenKey!) === -1) {
       setOpenKeys(keys)
     } else {
@@ -107,9 +108,9 @@ const SideBar = () => {
     //     return []
     // }
     return [
-      ...(decode?.role === 0
+      ...(decode?.role === 1
         ? [
-            getItem('Dashboard', URL.ADMIN_HOME_LIST, <HomeOutlined />),
+            getItem('Dashboard', URL.ADMIN_HOME, <HomeOutlined />),
             getItem(
               'Quản lý người dùng',
               URL.ADMIN_USER_LIST,
@@ -159,6 +160,7 @@ const SideBar = () => {
       onOpenChange={onOpenChange}
       onClick={handleClick}
       selectedKeys={selectedKeys}
+      className="text-black-primary"
       // items={items}
     >
       {items.map((item: any) =>

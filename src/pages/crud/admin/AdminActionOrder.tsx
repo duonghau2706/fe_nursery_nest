@@ -1,9 +1,8 @@
-import { userApi } from '@/adapter'
 import orderApi from '@/adapter/order'
 import useToken from '@/hook/token'
 import { QUERY_KEY, URL } from '@/utils/constants'
 import { createTimeStampFromMoment } from '@/utils/helper'
-import { Button, Col, ConfigProvider, Form, Input, Row } from 'antd'
+import { Button, Col, ConfigProvider, Form, Input, Row, Select } from 'antd'
 import moment from 'moment'
 import { useEffect } from 'react'
 import { useMutation, useQuery } from 'react-query'
@@ -37,12 +36,14 @@ const AdminActionOrder = () => {
     if (id) {
       form.setFieldValue('name', dataOrder?.name)
       form.setFieldValue('phone', dataOrder?.phone)
-      form.setFieldValue('address', dataOrder?.address)
+      form.setFieldValue('status_ship', dataOrder?.status_ship)
+      form.setFieldValue('status_money', dataOrder?.status_money)
+      form.setFieldValue('full_address', dataOrder?.full_address)
     }
   }, [dataOrder])
 
-  const mutationUpdateUser = useMutation({
-    mutationFn: (params: any) => userApi.updateUser(params),
+  const mutationUpdateOrder = useMutation({
+    mutationFn: (params: any) => orderApi.updateOrder(params),
     onSuccess: () => {
       toast.success('Cập nhật đơn hàng thành công!', {
         autoClose: 2000,
@@ -58,7 +59,7 @@ const AdminActionOrder = () => {
     const data = form.getFieldsValue()
 
     if (type === 'edit') {
-      mutationUpdateUser.mutate({
+      mutationUpdateOrder.mutate({
         id,
         ...data,
         updated_by: decode?.name,
@@ -66,6 +67,16 @@ const AdminActionOrder = () => {
       })
     }
   }
+
+  const optionsStatusMoney = [
+    { label: 'Đã thanh toán', value: 1 },
+    { label: 'Chưa thanh toán', value: 0 },
+  ]
+
+  const optionsStatusShip = [
+    { label: 'Đã vận chuyển', value: 1 },
+    { label: 'Chưa vận chuyển', value: 0 },
+  ]
 
   return (
     <div className="pt-[30px] px-10 bg-[#e8e6e6] pb-7 h-full">
@@ -147,7 +158,7 @@ const AdminActionOrder = () => {
                   className="w-ful mb-3"
                   name="phone"
                   label={
-                    <label style={{ fontSize: '15x', width: '50px' }}>
+                    <label style={{ fontSize: '15x', width: '70px' }}>
                       SĐT
                     </label>
                   }
@@ -167,7 +178,7 @@ const AdminActionOrder = () => {
                   {...formItemLayout}
                   // initialValue={id && dataOrder?.sale}
                   className="w-ful mb-3"
-                  name="address"
+                  name="full_address"
                   label={
                     <label style={{ fontSize: '15x', width: '100px' }}>
                       Địa chỉ
@@ -180,7 +191,60 @@ const AdminActionOrder = () => {
                     className="w-[300px]"
                   />
                 </Form.Item>
-              </Col>{' '}
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  {...formItemLayout}
+                  // initialValue={id && dataOrder?.sale}
+                  className="w-[410px] mb-3"
+                  name="status_money"
+                  label={
+                    <label style={{ fontSize: '15x', width: '70px' }}>
+                      Thanh toán
+                    </label>
+                  }
+                >
+                  <Select
+                    disabled={type === 'view' ? true : false}
+                    allowClear
+                    showSearch
+                    options={optionsStatusMoney}
+                    filterOption={(input: any, option: any) =>
+                      (option?.label ?? '')
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Row className="mb-1 mx-10">
+              <Col span={12}>
+                <Form.Item
+                  {...formItemLayout}
+                  // initialValue={id && dataOrder?.sale}
+                  className="w-[410px] mb-3"
+                  name="status_ship"
+                  label={
+                    <label style={{ fontSize: '15x', width: '100px' }}>
+                      Vận chuyển
+                    </label>
+                  }
+                >
+                  <Select
+                    disabled={type === 'view' ? true : false}
+                    allowClear
+                    showSearch
+                    options={optionsStatusShip}
+                    filterOption={(input: any, option: any) =>
+                      (option?.label ?? '')
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                  />
+                </Form.Item>
+              </Col>
               <Col span={12}></Col>
             </Row>
 

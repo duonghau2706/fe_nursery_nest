@@ -1,12 +1,6 @@
 import CartItem from './CartItem'
 
 const ListCart = ({ carts }: any) => {
-  // const dispatch = useDispatch()
-
-  // const [carts, setCarts] = useState(
-  //   useSelector((state: any) => state?.cartReducers?.cart)
-  // )
-
   return (
     <div className="flex flex-col gap-6">
       {carts?.map((cart: any) => (
@@ -15,10 +9,10 @@ const ListCart = ({ carts }: any) => {
           amount={cart?.amount}
           img={cart?.img}
           name={cart?.name}
-          productId={cart?.productId}
-          price={cart?.originalPrice}
+          productId={cart?.product_id}
+          price={cart?.original_price}
           quantity={cart?.quantity}
-          totalMoney={cart?.totalMoney}
+          // totalMoney={cart?.total_money}
           // handleDeleteProduct={handleDeleteProduct}
         />
       ))}

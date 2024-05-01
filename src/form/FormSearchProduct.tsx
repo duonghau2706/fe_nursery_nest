@@ -23,26 +23,15 @@ const FormSearchProduct = ({ onSearchHandler }: any) => {
   const optionsCategory: any = []
 
   dataProduct?.forEach((product: any) => {
-    if (product?.category) {
+    if (product?.category_id) {
       const ele = optionsCategory.filter(
-        (category: any) => category?.value === product?.category
+        (category: any) => category?.value === product?.category_id
       )
 
       if (ele?.length === 0)
         optionsCategory.push({
-          label:
-            product?.category === 0
-              ? 'Khăn lau mặt'
-              : product?.category === 1
-              ? 'Bông tẩy trang'
-              : product?.category === 2
-              ? 'Khăn khô đa năng'
-              : product?.category === 3
-              ? 'Khăn nén'
-              : product?.category === 4
-              ? 'Máy hút sữa'
-              : '',
-          value: product?.category,
+          label: product?.category_name,
+          value: product?.category_id,
         })
     }
   })

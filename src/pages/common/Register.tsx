@@ -6,7 +6,13 @@ import { useNavigate } from 'react-router-dom'
 // import useInput from '@/hook/use-input'
 import { useMutation } from 'react-query'
 
-import { loginApi } from '@/adapter'
+import { userApi } from '@/adapter'
+import {
+  cleanObj,
+  createTimeStampFromMoment,
+  create_UUID,
+} from '@/utils/helper'
+import moment from 'moment'
 import { toast } from 'react-toastify'
 
 /* eslint-disable no-template-curly-in-string */
@@ -23,13 +29,19 @@ const Register = () => {
   const [form] = Form.useForm()
   // const [showMessage, setShowMessage] = useState('')
 
-  const mutationLogin = useMutation({
-    mutationFn: (params: any) => loginApi.postLogin(params),
-    onSuccess: (res) => {
-      // res.data.token
-      // ? navigate(URL.HOME)
-      // : setShowMessage('Tài khoản hoặc mật khẩu không đúng.')
-      localStorage.setItem('token', res?.data?.token)
+  const userMutation = useMutation({
+    mutationFn: (params: any) => userApi.createUser(params),
+    onSuccess: () => {
+      toast.success('Tạo tài khoản thành công!', {
+        autoClose: 1500,
+        style: { marginTop: '50px' },
+      })
+
+      navigate(URL.LOGIN)
+      // mutationLogin.mutate({
+      //   email: form.getFieldValue('email'),
+      //   password: form.getFieldValue('password'),
+      // })
     },
     onError: () => {
       toast.error('Tài khoản hoặc mật khẩu không đúng.')
@@ -53,10 +65,17 @@ const Register = () => {
   // }
 
   const handlerLogin = () => {
-    mutationLogin.mutate({
+    const dataMutation = cleanObj({
+      name:
+        form.getFieldValue('firstName') + ' ' + form.getFieldValue('lastName'),
       email: form.getFieldValue('email'),
       password: form.getFieldValue('password'),
+      id: create_UUID(),
+      created_at: createTimeStampFromMoment(moment()),
+      updated_at: createTimeStampFromMoment(moment()),
     })
+
+    userMutation.mutate(dataMutation)
   }
 
   return (
@@ -187,6 +206,7 @@ const Register = () => {
               >
                 <Form.Item name="password">
                   <Input
+                    type="password"
                     size="large"
                     placeholder="Mật khẩu"
                     className="h-[42px] rounded-[20px] px-5 placeholder:text-[#ffffff] bg-[#ffffff33] border-none hover:bg-[#ffffff33]"

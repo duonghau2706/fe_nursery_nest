@@ -1,6 +1,11 @@
 #root {
   padding: 0;
 }
+
+.aant-layout-sider .ant-layout-sider-dark {
+  background-color: 'white' !important;
+}
+
 .ant-menu-light {
   background: transparent;
   color: white;

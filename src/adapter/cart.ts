@@ -7,9 +7,13 @@ const getAllCart = async (params?: any) =>
 const updateCart = async (params?: any) =>
   await sendPost(`${endpoint.update_cart}`, params).then((res) => res.data)
 
+const resetCard = async (params?: any) =>
+  await sendPost(`${endpoint.reset_cart}`, params).then((res) => res.data)
+
 const cartApi = {
   getAllCart,
   updateCart,
+  resetCard,
 }
 
 export default cartApi

@@ -1,5 +1,6 @@
 import { queryClient } from '@/App'
 import { productApi } from '@/adapter'
+import categoryApi from '@/adapter/category'
 import { ModalBase } from '@/components/modal'
 import { DisplayRecord } from '@/components/select'
 import TableListProduct from '@/components/table/TableListProduct'
@@ -37,6 +38,14 @@ const AdminProduct = () => {
         setPaginate(res?.data?.data?.pagination)
       })
     },
+  })
+
+  const { data: dataCategory = [] } = useQuery({
+    queryKey: [QUERY_KEY.GET_ALL_CATEGORIES],
+    queryFn: () =>
+      categoryApi.getAllCategories().then((res: any) => {
+        return res?.data?.data?.listCategory
+      }),
   })
 
   const onSearchHandler = (dataSearch: any) => {
@@ -128,6 +137,7 @@ const AdminProduct = () => {
           perPage={perPage}
           currentPage={currentPage || 1}
           dataTable={dataProduct}
+          dataCategory={dataCategory}
           loading={isLoading}
           setSelectedRowKeys={setSelectedRowKeys}
           // refetch={refetch}

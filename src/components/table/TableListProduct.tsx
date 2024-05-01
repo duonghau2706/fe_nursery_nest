@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom'
 
 const TableListProduct = ({
   dataTable,
+  dataCategory,
   loading,
   currentPage,
   perPage,
@@ -54,19 +55,11 @@ const TableListProduct = ({
       align: 'center',
       width: '130px',
       render: (_: any, record: any) => {
-        return (
-          <div>
-            {record?.category === 0
-              ? 'Khăn lau mặt'
-              : record?.category === 1
-              ? 'Bông tẩy trang'
-              : record?.category === 3
-              ? 'Khăn nén'
-              : record?.category === 4
-              ? 'Máy hút sữa'
-              : ''}
-          </div>
+        const cate = dataCategory?.filter(
+          (cate: any) => cate?.id === record?.category_id
         )
+
+        return <div>{cate?.[0]?.name}</div>
       },
     },
 

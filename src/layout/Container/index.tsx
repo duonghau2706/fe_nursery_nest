@@ -10,7 +10,6 @@ import { Link, Outlet, useNavigate } from 'react-router-dom'
 
 import LogoAdmin from '@/assets/image/logoAdmin.svg'
 import Logout from '@/assets/image/logout.svg'
-import { MenuFoldOutlined } from '@ant-design/icons'
 
 import cartApi from '@/adapter/cart'
 import Footer from '@/components/footer/Footer'
@@ -54,20 +53,26 @@ const ContainerBody = () => {
 
   return (
     <div className={style.wrapper}>
-      {decode?.role === 0 ? (
+      {/* admin */}
+      {decode?.role === 1 ? (
         <div>
           <Sider
             trigger={null}
             collapsible
-            className="h-screen bg-[#001233] fixed top-0 left-0 transition-all duration-500"
+            className="h-screen bg-white fixed top-0 left-0 transition-all duration-500"
             width={250}
           >
             <div className="relative h-screen cursor-pointer">
               <div
-                className="px-4 py-[4px] bg-white h-[60px] flex justify-center items-center"
-                onClick={() => navigate(URL.HOME)}
+                className="px-4 py-[4px] bg-white h-[80px] flex justify-center items-center"
+                onClick={() => navigate(URL.ADMIN_HOME)}
               >
-                <img src={logoLikado} width={150} height={50} />
+                <img
+                  src={logoLikado}
+                  width={150}
+                  height={100}
+                  className="mt-2"
+                />
               </div>
 
               <div className="mt-2">
@@ -78,12 +83,12 @@ const ContainerBody = () => {
 
           <div className="ml-[250px] h-screen transition-all duration-500 top-0 inset-x-0 fixed z-30 transition-position lg:w-auto">
             <div>
-              <div className="h-[60px] flex justify-between items-center pr-4 ">
-                <MenuFoldOutlined style={{ fontSize: '30px', color: '' }} />
+              <div className="bg-white h-[80px] flex justify-end items-center pr-4 ">
+                {/* <MenuFoldOutlined style={{ fontSize: '30px', color: '' }} /> */}
 
                 <div className="flex gap-2 cursor-pointer justify-end">
                   <img src={LogoAdmin} width={18} height={23}></img>
-                  <label className="cursor-pointer mt-[3px] font-bold">
+                  <label className="text-black-main cursor-pointer mt-[3px] font-bold">
                     {decode?.name}
                   </label>
 

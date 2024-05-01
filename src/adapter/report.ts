@@ -13,6 +13,12 @@ const renderEjsRevenue = async (params?: any) => {
   )
 }
 
+const renderEjsRevenueCategory = async (params?: any) => {
+  return await sendPost(`${endpoint.render_ejs_revenue_category}`, params).then(
+    (res) => res.data
+  )
+}
+
 const renderEjsMovie = async (params?: any) => {
   return await sendPost(`${endpoint.render_ejs_movie}`, params).then(
     (res) => res.data
@@ -21,6 +27,7 @@ const renderEjsMovie = async (params?: any) => {
 
 const reportApi = {
   get,
+  renderEjsRevenueCategory,
   renderEjsRevenue,
   renderEjsMovie,
 }
